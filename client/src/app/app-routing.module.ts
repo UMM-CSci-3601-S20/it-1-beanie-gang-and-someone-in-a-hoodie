@@ -15,9 +15,9 @@ import { NotePageComponent } from './notes/note-page.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
-  // {path: 'users', component: UserListComponent},
-  // {path: 'users/new', component: AddUserComponent},
-  // {path: 'users/:id', component: UserProfileComponent}
+  {path: 'users', component: UserListComponent},
+  {path: 'users/new', component: AddUserComponent},
+  {path: 'users/:id', component: UserProfileComponent},
   {path: 'faculty', component: FacultyListComponent},
   {path: 'faculty/new', component: AddFacultyComponent},
   {path: 'faculty/:id', component: FacultyPageComponent},
