@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'CSCI 3601 Iteration Template';
+  title = 'Beanie gang and someone in a hoodie iteration 1';
 }
