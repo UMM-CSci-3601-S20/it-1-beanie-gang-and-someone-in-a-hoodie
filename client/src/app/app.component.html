@@ -19,6 +19,12 @@
         Users
       </mat-list-item>
 
+      <mat-list-item routerLink="/owner" routerLinkActive="drawer-list-item-active"
+      (click)="drawer.close()">
+        <mat-icon matListIcon>group</mat-icon>
+        Owner
+    </mat-list-item>
+
     </mat-nav-list>
   </mat-sidenav>
 
