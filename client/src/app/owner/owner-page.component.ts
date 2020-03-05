@@ -3,7 +3,7 @@ import { OnInit, Component } from '@angular/core';
 @Component({
   selector: 'app-owner-page-component',
   templateUrl: 'owner-page.component.html',
-  styleUrls: [],
+  styleUrls: ['./owner-page.component.scss'],
   providers: []
 })
 

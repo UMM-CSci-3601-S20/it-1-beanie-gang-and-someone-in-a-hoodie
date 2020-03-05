@@ -1,0 +1,29 @@
+<div fxLayout="row">
+  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
+    <!--google calendar and related-->
+
+    <mat-card class="gcal-embed">
+
+    </mat-card>
+
+  </div>
+
+  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
+    <!-- list of displayed notes -->
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title class="note-list-title"> Current Notes: </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-nav-list class="notes-list">
+          <a mat-list-item *ngFor="let note of this.activeNotes" [routerLink]="['/notes', owner._id]"
+            class="note-item">
+
+          </a>
+        </mat-nav-list>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>
