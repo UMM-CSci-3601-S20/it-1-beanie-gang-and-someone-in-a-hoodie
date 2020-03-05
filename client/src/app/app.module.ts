@@ -35,12 +35,12 @@ import { AddUserComponent } from './users/add-user.component';
 import { UserCardComponent } from './users/user-card.component';
 
 
-// Faculty
-import { FacultyListComponent } from './faculty/faculty-list.component';
-import { FacultyService } from './faculty/faculty.service';
-import { AddFacultyComponent } from './faculty/add-faculty.component';
-import { FacultyNoticesComponent } from './faculty/faculty-notices.component';
-import { FacultyPageComponent } from './faculty/faculty-page.component';
+// Owner
+import { OwnerListComponent } from './owner/owner-list.component';
+import { OwnerService } from './owner/owner.service';
+import { AddOwnerComponent } from './owner/add-owner.component';
+import { OwnerNoticesComponent } from './owner/owner-notices.component';
+import { OwnerPageComponent } from './owner/owner-page.component';
 
 // Note
 import { NoteListComponent } from './notes/note-list.component';
@@ -79,10 +79,10 @@ const MATERIAL_MODULES: any[] = [
     UserCardComponent,
     UserProfileComponent,
     AddUserComponent,
-    FacultyListComponent,
-    AddFacultyComponent,
-    FacultyNoticesComponent,
-    FacultyPageComponent,
+    OwnerListComponent,
+    AddOwnerComponent,
+    OwnerNoticesComponent,
+    OwnerPageComponent,
     NoteListComponent,
     EditNoteComponent,
     NotePageComponent,
@@ -100,7 +100,7 @@ const MATERIAL_MODULES: any[] = [
   ],
   providers: [
     UserService,
-    FacultyService,
+    OwnerService,
     NoteService,
   ],
   bootstrap: [AppComponent]
