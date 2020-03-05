@@ -1,13 +1,13 @@
 import { OnInit, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-faculty-page-component',
-  templateUrl: 'faculty-page.component.html',
+  selector: 'app-owner-page-component',
+  templateUrl: 'owner-page.component.html',
   styleUrls: [],
   providers: []
 })
 
-export class FacultyPageComponent implements OnInit {
+export class OwnerPageComponent implements OnInit {
   ngOnInit(): void {
     throw new Error("Method not implemented.");
   }

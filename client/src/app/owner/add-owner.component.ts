@@ -1,13 +1,13 @@
 import { OnInit, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-faculty-notices-component',
-  templateUrl: 'faculty-notices.component.html',
+  selector: 'app-add-owner-component',
+  templateUrl: 'add-owner.component.html',
   styleUrls: [],
   providers: []
 })
 
-export class FacultyNoticesComponent implements OnInit {
+export class AddOwnerComponent implements OnInit {
   ngOnInit(): void {
     throw new Error("Method not implemented.");
   }
