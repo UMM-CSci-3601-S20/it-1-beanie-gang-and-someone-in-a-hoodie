@@ -24,14 +24,33 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 
-import { UserListComponent } from './users/user-list.component';
+// Home
 import { HomeComponent } from './home/home.component';
+
+// User
+import { UserListComponent } from './users/user-list.component';
 import { UserService } from './users/user.service';
-import { HttpClientModule } from '@angular/common/http';
-import { LayoutModule } from '@angular/cdk/layout';
-import { UserCardComponent } from './users/user-card.component';
 import { UserProfileComponent } from './users/user-profile.component';
 import { AddUserComponent } from './users/add-user.component';
+import { UserCardComponent } from './users/user-card.component';
+
+
+// Faculty
+import { FacultyListComponent } from './faculty/faculty-list.component';
+import { FacultyService } from './faculty/faculty.service';
+import { AddFacultyComponent } from './faculty/add-faculty.component';
+import { FacultyNoticesComponent } from './faculty/faculty-notices.component';
+import { FacultyPageComponent } from './faculty/faculty-page.component';
+
+// Note
+import { NoteListComponent } from './notes/note-list.component';
+import { NoteService } from './notes/note.service';
+import { EditNoteComponent } from './notes/edit-note.component';
+import { NotePageComponent } from './notes/note-page.component';
+
+// Other
+import { HttpClientModule } from '@angular/common/http';
+import { LayoutModule } from '@angular/cdk/layout';
 
 const MATERIAL_MODULES: any[] = [
   MatListModule,
@@ -60,6 +79,13 @@ const MATERIAL_MODULES: any[] = [
     UserCardComponent,
     UserProfileComponent,
     AddUserComponent,
+    FacultyListComponent,
+    AddFacultyComponent,
+    FacultyNoticesComponent,
+    FacultyPageComponent,
+    NoteListComponent,
+    EditNoteComponent,
+    NotePageComponent,
   ],
   imports: [
     BrowserModule,
@@ -73,7 +99,9 @@ const MATERIAL_MODULES: any[] = [
     LayoutModule,
   ],
   providers: [
-    UserService
+    UserService,
+    FacultyService,
+    NoteService,
   ],
   bootstrap: [AppComponent]
 })
