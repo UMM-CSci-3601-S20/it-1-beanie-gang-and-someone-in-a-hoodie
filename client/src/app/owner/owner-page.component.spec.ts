@@ -46,4 +46,6 @@ describe('OwnerPageComponent', () => {
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
-})
+
+  it('should have a notes field with correct keys', () =)
+});
