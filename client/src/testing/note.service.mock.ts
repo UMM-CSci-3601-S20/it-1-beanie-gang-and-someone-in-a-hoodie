@@ -3,7 +3,11 @@ import { Observable, of } from 'rxjs';
 import { Note, NoteStatus } from '../app/notes/note';
 import { NoteService } from '../app/notes/note.service';
 
+<<<<<<< HEAD
 @Injectable()
+=======
+@Injectable
+>>>>>>> owner-page
 export class MockNoteService extends NoteService {
   static testActiveNotes: Note[] = [
     {
