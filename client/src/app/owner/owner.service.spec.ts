@@ -5,7 +5,7 @@ import { Owner } from './owner';
 import { OwnerService } from './owner.service';
 
 describe('Owner service: ', () => {
-  // A small collection of test owners NEED TO MAKE A LOT OF CHANGES HERE
+  // A small collection of test owners
   const testOwners: Owner[] = [
     {
       _id: 'chris_id',
@@ -53,34 +53,25 @@ describe('Owner service: ', () => {
     httpTestingController.verify();
   });
 
-  /*it('getOwners() calls api/owners', () => {
-    // Assert that the users we get from this call to getUsers()
-    // should be our set of test users. Because we're subscribing
-    // to the result of getUsers(), this won't actually get
-    // checked until the mocked HTTP request 'returns' a response.
-    // This happens when we call req.flush(testUsers) a few lines
-    // down.
+  it('getOwners() calls api/owners', () => {
+
     ownerService.getOwners().subscribe(
       owners => expect(owners).toBe(testOwners)
     );
-
-    // Specify that (exactly) one request will be made to the specified URL.
     const req = httpTestingController.expectOne(ownerService.ownerUrl);
-    // Check that the request made to that URL was a GET request.
-    expect(req.request.method).toEqual('GET');
-    // Specify the content of the response to that request. This
-    // triggers the subscribe above, which leads to that check
-    // actually being performed.
-    req.flush(tests);
-  });*/
 
-  it('getOwners() calls api/owners with filter parameter \'admin\'', () => {
+    expect(req.request.method).toEqual('GET');
+
+    req.flush(testOwners);
+  });
+
+  it('getOwners() calls api/owners with filter parameter \'name\'', () => {
 
     ownerService.getOwners({ name: 'Chris' }).subscribe(
       owners => expect(owners).toBe(testOwners)
     );
 
-    // Specify that (exactly) one request will be made to the specified URL with the role parameter.
+    // Specify that (exactly) one request will be made to the specified URL with the name parameter.
     const req = httpTestingController.expectOne(
       (request) => request.url.startsWith(ownerService.ownerUrl) && request.params.has('name')
     );
@@ -88,7 +79,7 @@ describe('Owner service: ', () => {
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
 
-    // Check that the role parameter was 'admin'
+    // Check that the name parameter was 'Chris'
     expect(req.request.params.get('name')).toEqual('Chris');
 
     req.flush(testOwners);
@@ -100,7 +91,7 @@ describe('Owner service: ', () => {
       owners => expect(owners).toBe(testOwners)
     );
 
-    // Specify that (exactly) one request will be made to the specified URL with the role parameter.
+    // Specify that (exactly) one request will be made to the specified URL with the parameter.
     const req = httpTestingController.expectOne(
       (request) => request.url.startsWith(ownerService.ownerUrl) && request.params.has('email')
     );
@@ -108,7 +99,7 @@ describe('Owner service: ', () => {
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
 
-    // Check that the role parameter was 'admin'
+    // Check that the parameter was correct
     expect(req.request.params.get('email')).toEqual('mars@this.that');
 
     req.flush(testOwners);
@@ -120,7 +111,7 @@ describe('Owner service: ', () => {
       owners => expect(owners).toBe(testOwners)
     );
 
-    // Specify that (exactly) one request will be made to the specified URL with the role parameter.
+    // Specify that (exactly) one request will be made to the specified URL with the parameters.
     const req = httpTestingController.expectOne(
       (request) => request.url.startsWith(ownerService.ownerUrl)
         && request.params.has('name') && request.params.has('building') && request.params.has('officenumber')
@@ -129,7 +120,7 @@ describe('Owner service: ', () => {
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
 
-    // Check that the role parameters are correct
+    // Check that the parameters are correct
     expect(req.request.params.get('name')).toEqual('william');
     expect(req.request.params.get('building')).toEqual('Humanities');
     expect(req.request.params.get('officenumber')).toEqual('111');
@@ -157,18 +148,17 @@ describe('Owner service: ', () => {
     expect(ownerService.filterOwners(testOwners, { building: ownerCompany }).length).toBe(1);
   });
 
- /* This must be implemented later
-   it('addUser() calls api/users/new', () => {
+  it('addOwner() calls api/owners/new', () => {
 
-    userService.addUser(testUsers[1]).subscribe(
+    ownerService.addOwner(testOwners[1]).subscribe(
       id => expect(id).toBe('testid')
     );
 
-    const req = httpTestingController.expectOne(userService.userUrl + '/new');
+    const req = httpTestingController.expectOne(ownerService.ownerUrl + '/new');
 
     expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual(testUsers[1]);
+    expect(req.request.body).toEqual(testOwners[1]);
 
     req.flush({id: 'testid'});
-  });*/
+  });
 });
