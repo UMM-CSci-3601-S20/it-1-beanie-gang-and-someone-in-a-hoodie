@@ -12,14 +12,45 @@
     <!-- list of displayed notes -->
     <mat-card>
       <mat-card-header>
-        <mat-card-title class="note-list-title"> Current Notes: </mat-card-title>
+        <mat-card-title class="note-list-title">Current Notes:</mat-card-title>
       </mat-card-header>
 
+      <!-- active notes -->
       <mat-card-content>
-        <mat-nav-list class="notes-list">
-          <a mat-list-item *ngFor="let note of this.activeNotes" [routerLink]="['/notes', owner._id]"
+        <h3>Active Notes</h3>
+        <mat-nav-list class="active-notes-list">
+          <a mat-list-item *ngFor="let note of this.notes.get('active')" [routerLink]="['/notes', owner._id]"
             class="note-item">
+          </a>
+        </mat-nav-list>
+      </mat-card-content>
 
+      <!-- template notes -->
+      <mat-card-content>
+        <h3>Template Notes</h3>
+        <mat-nav-list class="template-notes-list">
+          <a mat-list-item *ngFor="let note of this.notes.get('template')" [routerLink]="['/notes', owner._id]"
+            class="note-item">
+          </a>
+        </mat-nav-list>
+      </mat-card-content>
+
+      <!-- deleted notes -->
+      <mat-card-content>
+        <h3>Deleted Notes</h3>
+        <mat-nav-list class="deleted-notes-list">
+          <a mat-list-item *ngFor="let note of this.notes.get('deleted')" [routerLink]="['/notes', owner._id]"
+            class="note-item">
+          </a>
+        </mat-nav-list>
+      </mat-card-content>
+
+      <!-- draft notes -->
+      <mat-card-content>
+        <h3>Draft Notes</h3>
+        <mat-nav-list class="draft-notes-list">
+          <a mat-list-item *ngFor="let note of this.notes.get('draft')" [routerLink]="['/notes', owner._id]"
+            class="note-item">
           </a>
         </mat-nav-list>
       </mat-card-content>
