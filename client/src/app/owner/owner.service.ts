@@ -11,7 +11,26 @@ export class OwnerService {
 
   constructor(private httpClient: HttpClient) {
   }
-
+  getOwners(filters?: { name?: string, email?: string, building?: string, officeNumber?: string }): Observable<Owner[]> {
+    let httpParams: HttpParams = new HttpParams();
+    if (filters) {
+      if (filters.name) {
+        httpParams = httpParams.set('name', filters.name);
+      }
+      if (filters.email) {
+        httpParams = httpParams.set('email', filters.email);
+      }
+      if (filters.building) {
+        httpParams = httpParams.set('building', filters.building);
+      }
+      if (filters.officeNumber){
+        httpParams = httpParams.set('officenumber', filters.officeNumber);
+      }
+    }
+    return this.httpClient.get<Owner[]>(this.ownerUrl, {
+      params: httpParams,
+    });
+  }
   getOwnerById(id: string): Observable<Owner> {
     return this.httpClient.get<Owner>(this.ownerUrl + '/' + id);
   }

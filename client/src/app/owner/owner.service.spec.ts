@@ -10,32 +10,26 @@ describe('Owner service: ', () => {
     {
       _id: 'chris_id',
       name: 'Chris',
-      age: 25,
-      company: 'UMM',
+      building: 'Science Hall',
       email: 'chris@this.that',
-      role: 'admin',
-      avatar: 'https://gravatar.com/avatar/8c9616d6cc5de638ea6920fb5d65fc6c?d=identicon'
+      officeNumber: '1001'
     },
     {
-      _id: 'pat_id',
-      name: 'Pat',
-      age: 37,
-      company: 'IBM',
-      email: 'pat@something.com',
-      role: 'editor',
-      avatar: 'https://gravatar.com/avatar/b42a11826c3bde672bce7e06ad729d44?d=identicon'
+      _id: 'richard_id',
+      name: 'Richard Mars',
+      building: 'HFA',
+      email: 'mars@this.that',
+      officeNumber: '2022'
     },
     {
-      _id: 'jamie_id',
-      name: 'Jamie',
-      age: 37,
-      company: 'Frogs, Inc.',
-      email: 'jamie@frogs.com',
-      role: 'viewer',
-      avatar: 'https://gravatar.com/avatar/d4a6c71dd9470ad4cf58f78c100258bf?d=identicon'
+      _id: 'william_id',
+      name: 'William',
+      building: 'Humanities',
+      email: 'enterprise@this.that',
+      officeNumber: '111'
     }
   ];
-  let userService: UserService;
+  let ownerService: OwnerService;
   // These are used to mock the HTTP requests so that we (a) don't have to
   // have the server running and (b) we can check exactly which HTTP
   // requests were made to ensure that we're making the correct requests.
@@ -51,7 +45,7 @@ describe('Owner service: ', () => {
     httpTestingController = TestBed.inject(HttpTestingController);
     // Construct an instance of the service with the mock
     // HTTP client.
-    userService = new UserService(httpClient);
+    ownerService = new OwnerService(httpClient);
   });
 
   afterEach(() => {
@@ -59,123 +53,112 @@ describe('Owner service: ', () => {
     httpTestingController.verify();
   });
 
-  it('getUsers() calls api/users', () => {
+  /*it('getOwners() calls api/owners', () => {
     // Assert that the users we get from this call to getUsers()
     // should be our set of test users. Because we're subscribing
     // to the result of getUsers(), this won't actually get
     // checked until the mocked HTTP request 'returns' a response.
     // This happens when we call req.flush(testUsers) a few lines
     // down.
-    userService.getUsers().subscribe(
-      users => expect(users).toBe(testUsers)
+    ownerService.getOwners().subscribe(
+      owners => expect(owners).toBe(testOwners)
     );
 
     // Specify that (exactly) one request will be made to the specified URL.
-    const req = httpTestingController.expectOne(userService.userUrl);
+    const req = httpTestingController.expectOne(ownerService.ownerUrl);
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
     // Specify the content of the response to that request. This
     // triggers the subscribe above, which leads to that check
     // actually being performed.
-    req.flush(testUsers);
-  });
+    req.flush(tests);
+  });*/
 
-  it('getUsers() calls api/users with filter parameter \'admin\'', () => {
+  it('getOwners() calls api/owners with filter parameter \'admin\'', () => {
 
-    userService.getUsers({ role: 'admin' }).subscribe(
-      users => expect(users).toBe(testUsers)
+    ownerService.getOwners({ name: 'Chris' }).subscribe(
+      owners => expect(owners).toBe(testOwners)
     );
 
     // Specify that (exactly) one request will be made to the specified URL with the role parameter.
     const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(userService.userUrl) && request.params.has('role')
+      (request) => request.url.startsWith(ownerService.ownerUrl) && request.params.has('name')
     );
 
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
 
     // Check that the role parameter was 'admin'
-    expect(req.request.params.get('role')).toEqual('admin');
+    expect(req.request.params.get('name')).toEqual('Chris');
 
-    req.flush(testUsers);
+    req.flush(testOwners);
   });
 
-  it('getUsers() calls api/users with filter parameter \'age\'', () => {
+  it('getOwners() calls api/owners with filter parameter \'email\'', () => {
 
-    userService.getUsers({ age: 25 }).subscribe(
-      users => expect(users).toBe(testUsers)
+    ownerService.getOwners({ email: 'mars@this.that' }).subscribe(
+      owners => expect(owners).toBe(testOwners)
     );
 
     // Specify that (exactly) one request will be made to the specified URL with the role parameter.
     const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(userService.userUrl) && request.params.has('age')
+      (request) => request.url.startsWith(ownerService.ownerUrl) && request.params.has('email')
     );
 
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
 
     // Check that the role parameter was 'admin'
-    expect(req.request.params.get('age')).toEqual('25');
+    expect(req.request.params.get('email')).toEqual('mars@this.that');
 
-    req.flush(testUsers);
+    req.flush(testOwners);
   });
 
-  it('getUsers() calls api/users with multiple filter parameters', () => {
+  it('getOwners() calls api/owners with multiple filter parameters', () => {
 
-    userService.getUsers({ role: 'editor', company: 'IBM', age: 37 }).subscribe(
-      users => expect(users).toBe(testUsers)
+    ownerService.getOwners({ name: 'william', building: 'Humanities', officeNumber: '111' }).subscribe(
+      owners => expect(owners).toBe(testOwners)
     );
 
     // Specify that (exactly) one request will be made to the specified URL with the role parameter.
     const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(userService.userUrl)
-        && request.params.has('role') && request.params.has('company') && request.params.has('age')
+      (request) => request.url.startsWith(ownerService.ownerUrl)
+        && request.params.has('name') && request.params.has('building') && request.params.has('officenumber')
     );
 
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
 
     // Check that the role parameters are correct
-    expect(req.request.params.get('role')).toEqual('editor');
-    expect(req.request.params.get('company')).toEqual('IBM');
-    expect(req.request.params.get('age')).toEqual('37');
+    expect(req.request.params.get('name')).toEqual('william');
+    expect(req.request.params.get('building')).toEqual('Humanities');
+    expect(req.request.params.get('officenumber')).toEqual('111');
 
-    req.flush(testUsers);
+    req.flush(testOwners);
   });
 
-  it('getUserById() calls api/users/id', () => {
-    const targetUser: User = testUsers[1];
-    const targetId: string = targetUser._id;
-    userService.getUserById(targetId).subscribe(
-      user => expect(user).toBe(targetUser)
+  it('getOwnerById() calls api/owners/id', () => {
+    const targetOwner: Owner = testOwners[1];
+    const targetId: string = targetOwner._id;
+    ownerService.getOwnerById(targetId).subscribe(
+      owner => expect(owner).toBe(targetOwner)
     );
 
-    const expectedUrl: string = userService.userUrl + '/' + targetId;
+    const expectedUrl: string = ownerService.ownerUrl + '/' + targetId;
     const req = httpTestingController.expectOne(expectedUrl);
     expect(req.request.method).toEqual('GET');
-    req.flush(targetUser);
+    req.flush(targetOwner);
   });
 
-  it('filterUsers() filters by name', () => {
-    expect(testUsers.length).toBe(3);
-    const userName = 'a';
-    expect(userService.filterUsers(testUsers, { name: userName }).length).toBe(2);
+
+  it('filterOwners() filters by building', () => {
+    expect(testOwners.length).toBe(3);
+    const ownerCompany = 'HFA';
+    expect(ownerService.filterOwners(testOwners, { building: ownerCompany }).length).toBe(1);
   });
 
-  it('filterUsers() filters by company', () => {
-    expect(testUsers.length).toBe(3);
-    const userCompany = 'UMM';
-    expect(userService.filterUsers(testUsers, { company: userCompany }).length).toBe(1);
-  });
-
-  it('filterUsers() filters by name and company', () => {
-    expect(testUsers.length).toBe(3);
-    const userCompany = 'UMM';
-    const userName = 'chris';
-    expect(userService.filterUsers(testUsers, { name: userName, company: userCompany }).length).toBe(1);
-  });
-
-  it('addUser() calls api/users/new', () => {
+ /* This must be implemented later
+   it('addUser() calls api/users/new', () => {
 
     userService.addUser(testUsers[1]).subscribe(
       id => expect(id).toBe('testid')
@@ -187,5 +170,5 @@ describe('Owner service: ', () => {
     expect(req.request.body).toEqual(testUsers[1]);
 
     req.flush({id: 'testid'});
-  });
+  });*/
 });
