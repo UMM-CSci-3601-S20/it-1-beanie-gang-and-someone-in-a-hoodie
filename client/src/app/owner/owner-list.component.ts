@@ -32,6 +32,16 @@ export class OwnerListComponent implements OnInit, OnDestroy  {
   constructor(private ownerService: OwnerService) {
 
   }
+  getOwnersFromServer(): void {
+    this.unsub();
+    this.getOwnersSub = this.ownerService.getOwners({
+    }).subscribe(returnedOwners => {
+      this.serverFilteredOwners = returnedOwners;
+      this.updateFilter();
+    }, err => {
+      console.log(err);
+    });
+  }
 
 
   public updateFilter(): void {
@@ -48,6 +58,7 @@ export class OwnerListComponent implements OnInit, OnDestroy  {
    *
    */
   ngOnInit(): void {
+    this.getOwnersFromServer();
   }
 
   ngOnDestroy(): void {

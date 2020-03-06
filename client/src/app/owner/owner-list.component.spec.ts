@@ -62,19 +62,19 @@ describe('Owner list', () => {
   }));
 
   it('contains all the owners', () => {
-    expect(ownerList.filteredOwners.length).toBe(3);
+    expect(ownerList.serverFilteredOwners.length).toBe(3);
   });
 
   it('contains a owner named \'Chris\'', () => {
-    expect(ownerList.filteredOwners.some((owner: Owner) => owner.name === 'Chris')).toBe(true);
+    expect(ownerList.serverFilteredOwners.some((owner: Owner) => owner.name === 'Chris')).toBe(true);
   });
 
   it('contain a owner named \'Jamie\'', () => {
-    expect(ownerList.filteredOwners.some((owner: Owner) => owner.name === 'Jamie')).toBe(true);
+    expect(ownerList.serverFilteredOwners.some((owner: Owner) => owner.name === 'Jamie')).toBe(true);
   });
 
   it('doesn\'t contain a owner named \'Santa\'', () => {
-    expect(ownerList.filteredOwners.some((owner: Owner) => owner.name === 'Santa')).toBe(false);
+    expect(ownerList.serverFilteredOwners.some((owner: Owner) => owner.name === 'Santa')).toBe(false);
   });
 });
 
