@@ -43,12 +43,30 @@
 
         <br>
         <div fxLayout="row wrap" fxLayoutGap="10px">
-          <label>View type: </label>
-          <mat-radio-group aria-label="View type" [(ngModel)]="viewType" id="view-type-radio">
-            <mat-radio-button value="list">List</mat-radio-button>
-          </mat-radio-group>
+          <mat-radio-group aria-label="View type" [(ngModel)]="viewType" id="view-type-radio"></mat-radio-group>
         </div>
       </mat-card-content>
     </mat-card>
   </div>
 </div>
+
+<div fxLayout="row">
+  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10" *ngIf="serverFilteredOwners" >
+    <!-- Switch between card and list view based on the viewType variable, set above in the mar-radio-group -->
+
+      <!-- List view -->
+      <mat-card class="'list'">
+        <mat-card-content>
+          <mat-nav-list class="owner-nav-list">
+            <h3 mat-subheader>Owners</h3>
+            <a mat-list-item *ngFor="let owner of this.filteredOwners" [routerLink]="['/owners', owner._id]" class="owner-list-item">
+              <h3 matLine class="owner-list-name"> {{owner.name}} </h3>
+              <p matLine class="owner-list-building"> {{owner.building}} </p>
+              <p matLine class="owner-list-officenumber">{{owner.officeNumber}}</p>
+            </a>
+          </mat-nav-list>
+        </mat-card-content>
+      </mat-card>
+
+
+  </div>

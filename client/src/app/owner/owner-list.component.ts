@@ -19,6 +19,7 @@ export class OwnerListComponent implements OnInit, OnDestroy  {
   public ownerEmail: string;
   public ownerBuilding: string;
   public ownerOfficeNumber: string;
+  public viewType: "list";
   getOwnersSub: Subscription;
 
 
