@@ -1,6 +1,6 @@
 export interface Note {
   _id: string;
-  owner: string;
+  ownerID: string;
   body: string;
   addDate: Date;
   expireDate: Date;
