@@ -23,21 +23,15 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
 
   owner: Owner;
   id: string;
-  getOwnerSub: Subscription;
   getNotesSub: Subscription;
 
 
 
 
   ngOnInit(): void {
-    // Subscribe to the correct owner and their notes
+    // Subscribe owner's notes
     this.route.paramMap.subscribe((pmap) => {
       this.id = pmap.get('id');
-      if (this.getOwnerSub) {
-        this.getOwnerSub.unsubscribe();
-      }
-      this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe(owner => this.owner = owner);
-
       if (this.getNotesSub) {
         this.getNotesSub.unsubscribe();
       }
@@ -48,10 +42,6 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.getOwnerSub) {
-      this.getOwnerSub.unsubscribe();
-    }
-
     if (this.getNotesSub) {
       this.getNotesSub.unsubscribe();
     }
