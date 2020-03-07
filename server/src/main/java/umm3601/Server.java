@@ -23,7 +23,7 @@ public class Server {
     // Get the MongoDB address and database name from environment variables and
     // if they aren't set, use the defaults of "localhost" and "dev".
     String mongoAddr = System.getenv().getOrDefault("MONGO_ADDR", "localhost");
-    String databaseName = System.getenv().getOrDefault("MONGO_DB", "dev");
+    String databaseName = System.getenv().getOrDefault("MONGO_DB", "team4IterationDev");
 
     // Setup the MongoDB client object with the information we set earlier
     MongoClient mongoClient = MongoClients.create(
