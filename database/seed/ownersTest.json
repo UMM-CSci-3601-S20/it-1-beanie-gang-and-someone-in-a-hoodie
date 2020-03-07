@@ -1,0 +1,37 @@
+[
+  {
+    "$oid": "2fe01d6c5f1ab7afd60f375b",
+    "name": "Harry Zorander",
+    "email": "harry@blob.com",
+    "building": "White House",
+    "officeNumber": 112
+  },
+  {
+    "$oid": "3a2b9370f396026fad6c4844",
+    "name": "Eric Flagg",
+    "email": "eric@blob.com",
+    "building": "Taj Mahal",
+    "officeNumber": 55
+  },
+  {
+    "$oid": "959245662f4685083b4aa907",
+    "name": "Prospero Bruce",
+    "email": "prospero@blob.com",
+    "building": "Hagia Sophia",
+    "officeNumber": 7
+  },
+  {
+    "$oid": "9bd53626c7fdda3ee1201c63",
+    "name": "Richard Tudor",
+    "email": "richard@blob.com",
+    "building": "The Guggenheim",
+    "officeNumber": 13
+  },
+  {
+    "$oid": "ab53d13949424cf863613677",
+    "name": "Oscar Yaztromo",
+    "email": "oscar@blob.com",
+    "building": "Dancing House",
+    "officeNumber": 251
+  }
+]
