@@ -76,7 +76,7 @@ export class AddOwnerComponent implements OnInit {
 
       officeNumber: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.minLength(2),
+        Validators.minLength(1),
         Validators.maxLength(50),
         Validators.pattern('^[A-Za-z0-9\\s]+[A-Za-z0-9\\s]+$(\\.0-9+)?'),
       ])),
