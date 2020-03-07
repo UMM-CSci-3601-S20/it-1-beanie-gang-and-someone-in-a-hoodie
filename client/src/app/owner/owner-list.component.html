@@ -3,5 +3,74 @@
     <mat-card class="owner-list-card">
       This is page is under construction currently! This page will allow access to individual owner page.
     </mat-card>
+    <mat-card class="search-card">
+      <mat-card-header>
+        <mat-card-title class="owner-list-title">Owners</mat-card-title>
+      </mat-card-header>
+      <mat-card-content fxLayout="column" >
+
+        <div fxLayout="row wrap" fxLayoutGap="10px">
+          <!-- Examples of filtering in Angular -->
+
+          <mat-form-field class="input-field">
+            <mat-label>Name</mat-label>
+            <input matInput id="owner-name-input" placeholder="Filter by name"
+            [(ngModel)]="ownerName" (input)="updateFilter()">
+            <mat-hint>Filtered in Angular</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field class="input-field">
+            <mat-label>Email</mat-label>
+            <input matInput id="owner-email-input" placeholder="Filter by email"
+            [(ngModel)]="ownerEmail" (input)="updateFilter()">
+            <mat-hint>Filtered in Angular</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field class="input-field">
+            <mat-label>Building</mat-label>
+            <input matInput id="owner-building-input" placeholder="Filter by building"
+            [(ngModel)]="ownerBuilding" (input)="updateFilter()">
+            <mat-hint>Filtered in Angular</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field class="input-field">
+            <mat-label>Office Number</mat-label>
+            <input matInput id="owner-officenumber-input" placeholder="Filter by office number"
+            [(ngModel)]="ownerOfficeNumber" (input)="updateFilter()">
+            <mat-hint>Filtered in Angular</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <br>
+        <div fxLayout="row wrap" fxLayoutGap="10px">
+          <mat-radio-group aria-label="View type" [(ngModel)]="viewType" id="view-type-radio"></mat-radio-group>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>
+
+<div fxLayout="row">
+  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10" *ngIf="filteredOwners" >
+    <!-- Switch between card and list view based on the viewType variable, set above in the mar-radio-group -->
+
+      <!-- List view -->
+      <mat-card class="'list'">
+        <mat-card-content>
+          <mat-nav-list class="owner-nav-list">
+            <h3 mat-subheader>Owners</h3>
+            <a mat-list-item *ngFor="let owner of this.filteredOwners" [routerLink]="['/owners', owner._id]" class="owner-list-item">
+              <h3 matLine class="owner-list-name"> {{owner.name}} </h3>
+              <p matLine class="owner-list-building"> {{owner.building}} </p>
+              <p matLine class="owner-list-officenumber">{{owner.officeNumber}}</p>
+            </a>
+          </mat-nav-list>
+        </mat-card-content>
+      </mat-card>
+
+  </div>
+
+  <button mat-fab class="add-owner-fab" matTooltip="Add Owner" matTooltipPosition="left" routerLink="/owners/new">
+    <mat-icon class="md-24" aria-label="Add Owner">add</mat-icon>
+</button>
+
