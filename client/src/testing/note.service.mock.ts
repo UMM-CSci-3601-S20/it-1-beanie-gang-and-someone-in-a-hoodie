@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Note, NoteStatus } from '../app/notes/note';
+import { Note } from '../app/notes/note';
 import { NoteService } from '../app/notes/note.service';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class MockNoteService extends NoteService {
   static testActiveNotes: Note[] = [
     {
       _id: 'first_id',
-      owner: 'test-id',
+      ownerID: 'test-id',
       body: 'This is the body of the first test id. It is somewhat long.',
       addDate: new Date(),
       expireDate: new Date(),
@@ -16,7 +16,7 @@ export class MockNoteService extends NoteService {
     },
     {
       _id: 'second_id',
-      owner: 'test-id',
+      ownerID: 'test-id',
       body: 'This is the second test id.',
       addDate: new Date(),
       expireDate: new Date(),
@@ -26,7 +26,7 @@ export class MockNoteService extends NoteService {
   static testTemplateNotes: Note[] = [
     {
       _id: 'third_id',
-      owner: 'test-id',
+      ownerID: 'test-id',
       body: 'Third test id body.',
       addDate: new Date(),
       expireDate: new Date(),
@@ -34,7 +34,7 @@ export class MockNoteService extends NoteService {
     },
     {
       _id: 'fourth_id',
-      owner: 'test-id',
+      ownerID: 'test-id',
       body: 'This is the fourth test id.',
       addDate: new Date(),
       expireDate: new Date(),
@@ -44,7 +44,7 @@ export class MockNoteService extends NoteService {
   static testDraftNotes: Note[] = [
     {
       _id: 'fifth_id',
-      owner: 'test-id',
+      ownerID: 'test-id',
       body: 'Fifth id test body.',
       addDate: new Date(),
       expireDate: new Date(),
@@ -52,7 +52,7 @@ export class MockNoteService extends NoteService {
     },
     {
       _id: 'sixth_id',
-      owner: 'test-id',
+      ownerID: 'test-id',
       body: 'Sixth id test body.',
       addDate: new Date(),
       expireDate: new Date(),
@@ -62,7 +62,7 @@ export class MockNoteService extends NoteService {
   static testDeletedNotes: Note[] = [
     {
       _id: 'seventh_id',
-      owner: 'test-id',
+      ownerID: 'test-id',
       body: 'Fifth id test body.',
       addDate: new Date(),
       expireDate: new Date(),
@@ -70,7 +70,7 @@ export class MockNoteService extends NoteService {
     },
     {
       _id: 'eighth_id',
-      owner: 'test-id',
+      ownerID: 'test-id',
       body: 'Eighth id test body.',
       addDate: new Date(),
       expireDate: new Date(),
@@ -84,7 +84,7 @@ export class MockNoteService extends NoteService {
   }
 
   getNotesByOwner(OwnerId: string): Observable<Map<string, Note[]>> {
-    let outputMap = new Map<string, Note[]>();
+    const outputMap = new Map<string, Note[]>();
     outputMap.set('active', MockNoteService.testActiveNotes);
     outputMap.set('template', MockNoteService.testTemplateNotes);
     outputMap.set('draft', MockNoteService.testDraftNotes);

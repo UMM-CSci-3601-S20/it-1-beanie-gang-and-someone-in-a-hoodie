@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { map } from 'rxjs/operators';
-import { Note } from './note';
+import { Note, NoteStatus } from './note';
 
 @Injectable()
 export class NoteService {
@@ -14,20 +14,73 @@ export class NoteService {
 
   /**
    *
-   * @param ownerId: identifier number of the owner
+   * @param ownerID: _id of the owner
    * whose notes are being retrieved.
    *
-   * @returns a map of the notes belonging to this owner,
-   * with the keys 'active', 'template', 'draft', and 'deleted'.
+   * @returns a list of the notes belonging to this owner, filtered by body and status
    *
    */
-
-  getNotesByOwner(ownerId: string): Observable<Map<string, Note[]>> {
+  getNotesByOwner(ownerID: string, filters?: { body?: string, status?: NoteStatus} ): Observable<Note[]> {
     let httpParams: HttpParams = new HttpParams();
-    httpParams = httpParams.set('id', ownerId);
-    return this.httpClient.get<Map<string, Note[]>>(this.noteUrl, {
+    httpParams = httpParams.set('ownerid', ownerID);  // Ensure we are getting notes belonging to this owner
+    if (filters) {
+      if (filters.body) {
+        httpParams = httpParams.set('body', filters.body);
+      }
+      if (filters.status) {
+        httpParams = httpParams.set('status', filters.status);
+      }
+    }
+    return this.httpClient.get<Note[]>(this.noteUrl, {
       params: httpParams,
     });
   }
 
+  /**
+   * @param id: _id of the note being retrieved
+   * @param ownerID: _id of the owner who is requesting this note (fails if not a match in the note)
+   *
+   * @returns a single note with `id` belonging to `ownerID`
+   */
+  getNoteById(id: string, ownerID: string): Observable<Note> {
+    let httpParams: HttpParams = new HttpParams();
+    httpParams = httpParams.set('ownerid', ownerID); // Ensure we are getting a note that belongs to this owner
+    return this.httpClient.get<Note>(this.noteUrl + '/' + id, {
+      params: httpParams,
+    });
+  }
+
+  /**
+   *
+   * @param notes: the list of notes being filtered
+   * @param filters: filtering by `addDate` and `expireDate`
+   */
+  filterNotes(notes: Note[], filters: { addDate?: Date, expireDate?: Date } ): Note[] {
+
+    let filteredNotes = notes;
+
+    // Filter by addDate
+    if (filters.addDate) {
+      filteredNotes = filteredNotes.filter(note => {
+        return note.addDate.toISOString().indexOf(filters.addDate.toISOString()) !== -1;
+      });
+    }
+    // Filter by expireDate
+    if (filters.expireDate) {
+      filteredNotes = filteredNotes.filter(note => {
+        return note.expireDate.toISOString().indexOf(filters.expireDate.toISOString()) !== -1;
+      });
+    }
+
+    return filteredNotes;
+  }
+
+  addNewNote(newNote: Note): Observable<string> {
+    // Send a post request to add a new note with the note data as the body.
+    return this.httpClient.post<{id: string}>(this.noteUrl + '/new', newNote).pipe(map(res => res.id));
+  }
+
+  // To implement
+  deleteNote()
+  editNote()
 }
