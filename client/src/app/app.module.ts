@@ -48,6 +48,9 @@ import { NoteService } from './notes/note.service';
 import { EditNoteComponent } from './notes/edit-note.component';
 import { NotePageComponent } from './notes/note-page.component';
 
+// Google
+import {GCalService} from './google/gcal.service';
+
 // Other
 import { HttpClientModule } from '@angular/common/http';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -102,6 +105,7 @@ const MATERIAL_MODULES: any[] = [
     UserService,
     OwnerService,
     NoteService,
+    GCalService
   ],
   bootstrap: [AppComponent]
 })
