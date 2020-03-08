@@ -118,9 +118,9 @@ public class OwnerController {
   public void addNewOwner(Context ctx) {
     Owner newOwner = ctx.bodyValidator(Owner.class)
       .check((owner) -> owner.name != null && owner.name.length() > 0) // Make sure the `name` field was supplied and non-empty
-      .check((owner) -> owner.email.matches(emailRegex))  // Make sure the `email` field was supplied and valid
       .check((owner) -> owner.building != null && owner.building.length() > 0)  // Make sure the `building` field was supplied and non-empty
       .check((owner) -> owner.officeNumber != null && owner.officeNumber.length() > 0)  // Make sure the `officeNumber` field was supplied and non-empty
+      .check((owner) -> owner.email.matches(emailRegex))  // Make sure the `email` field was supplied and valid
       .get();
 
     ownerCollection.insertOne(newOwner);
