@@ -5,6 +5,7 @@ import { Owner } from './owner';
 import { Subscription } from 'rxjs';
 import { NoteService } from '../notes/note.service';
 import { ActivatedRoute } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-owner-page-component',
@@ -15,8 +16,8 @@ import { ActivatedRoute } from '@angular/router';
 
 export class OwnerPageComponent implements OnInit, OnDestroy {
 
-  constructor(private ownerService: OwnerService,
-              private noteService: NoteService, private route: ActivatedRoute) { }
+  constructor(private ownerService: OwnerService, private noteService: NoteService,
+              private route: ActivatedRoute, private sanitizer: DomSanitizer) { }
 
   // Keys: 'active', 'template', 'deleted', 'draft'
   public notes: Map<string, Note[]>;
@@ -25,6 +26,7 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   id: string;
   getOwnerSub: Subscription;
   getNotesSub: Subscription;
+  calendarUrl = this.sanitizer.bypassSecurityTrustResourceUrl('https://calendar.google.com/calendar/embed?mode=week&src=' + this.owner.email);
 
 
 
