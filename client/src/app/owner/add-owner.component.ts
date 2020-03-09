@@ -24,10 +24,8 @@ export class AddOwnerComponent implements OnInit {
   add_owner_validation_messages = {
     name: [
       {type: 'required', message: 'Name is required'},
-      {type: 'minlength', message: 'Name must be at least 2 characters long'},
       {type: 'maxlength', message: 'Name cannot be more than 50 characters long'},
       {type: 'pattern', message: 'Name must contain only numbers and letters'},
-      // {type: 'existingName', message: 'Name has already been taken'}
     ],
 
     email: [
@@ -54,11 +52,15 @@ export class AddOwnerComponent implements OnInit {
     // add owner form validations
     this.addOwnerForm = this.fb.group({
       // We allow alphanumeric input and limit the length for name.
+      // FIX: this incorrectly rejects owners whose names contain
+      // non-English characters.  I'm unclear as to why we're actually
+      // doing this check in the first place--if we want to prevent some
+      // sort of attack, we should perform actual sanitation rather than
+      // simply excluding lists of characters.
       name: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.minLength(2),
         Validators.maxLength(50),
-        Validators.pattern('^[A-Za-z0-9\\s]+[A-Za-z0-9\\s]+$(\\.0-9+)?'),
+        Validators.pattern('^[\\w\\s]+$'),
       ])),
       // We don't need a special validator just for our app here, but there is a default one for email.
       // We will require the email, though.
@@ -71,14 +73,14 @@ export class AddOwnerComponent implements OnInit {
         Validators.required,
         Validators.minLength(2),
         Validators.maxLength(50),
-        Validators.pattern('^[A-Za-z0-9\\s]+[A-Za-z0-9\\s]+$(\\.0-9+)?'),
+        Validators.pattern('^[\\w\\s]+$'),
       ])),
 
       officeNumber: new FormControl('', Validators.compose([
         Validators.required,
         Validators.minLength(1),
         Validators.maxLength(50),
-        Validators.pattern('^[A-Za-z0-9\\s]+[A-Za-z0-9\\s]+$(\\.0-9+)?'),
+        Validators.pattern('^[\\w\\s]+$'),
       ])),
 
     });
