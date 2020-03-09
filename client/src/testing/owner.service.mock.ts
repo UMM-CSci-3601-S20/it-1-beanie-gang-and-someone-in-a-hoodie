@@ -41,7 +41,9 @@ export class MockOwnerService extends OwnerService {
   }
 
   getOwnerById(id: string): Observable<Owner> {
-
+    // If the specified ID is for the first test user,
+    // return that user, otherwise return `null` so
+    // we can test illegal user requests.
     if (id === MockOwnerService.testOwners[0]._id) {
       return of(MockOwnerService.testOwners[0]);
     } else {

@@ -48,7 +48,11 @@ export class UserListComponent implements OnInit, OnDestroy  {
 
   public updateFilter(): void {
     this.filteredUsers = this.userService.filterUsers(
-      this.serverFilteredUsers, { name: this.userName, company: this.userCompany });
+      this.serverFilteredUsers,
+      {
+        name: this.userName,
+        company: this.userCompany
+      });
   }
 
   /**
