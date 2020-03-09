@@ -5,7 +5,7 @@ import { NoteService } from '../app/notes/note.service';
 
 @Injectable()
 export class MockNoteService extends NoteService {
-  static testActiveNotes: Note[] = [
+  static testNotes: Note[] = [
     {
       _id: 'first_id',
       ownerID: 'test-id',
@@ -21,9 +21,7 @@ export class MockNoteService extends NoteService {
       addDate: new Date(),
       expireDate: new Date(),
       status: 'active'
-    }
-  ];
-  static testTemplateNotes: Note[] = [
+    },
     {
       _id: 'third_id',
       ownerID: 'test-id',
@@ -39,9 +37,7 @@ export class MockNoteService extends NoteService {
       addDate: new Date(),
       expireDate: new Date(),
       status: 'template'
-    }
-  ];
-  static testDraftNotes: Note[] = [
+    },
     {
       _id: 'fifth_id',
       ownerID: 'test-id',
@@ -57,9 +53,7 @@ export class MockNoteService extends NoteService {
       addDate: new Date(),
       expireDate: new Date(),
       status: 'draft'
-    }
-  ];
-  static testDeletedNotes: Note[] = [
+    },
     {
       _id: 'seventh_id',
       ownerID: 'test-id',
@@ -83,13 +77,17 @@ export class MockNoteService extends NoteService {
     super(null);
   }
 
-  getNotesByOwner(OwnerId: string): Observable<Map<string, Note[]>> {
-    const outputMap = new Map<string, Note[]>();
-    outputMap.set('active', MockNoteService.testActiveNotes);
-    outputMap.set('template', MockNoteService.testTemplateNotes);
-    outputMap.set('draft', MockNoteService.testDraftNotes);
-    outputMap.set('deleted', MockNoteService.testDeletedNotes);
-    return of(outputMap);
+  getNotesByOwner(OwnerId: string): Observable<Note[]> {
+   let notesObtained: Note[];
+   let amount = 0;
+   for(let i = 0; i < 8; i++){
+      if (OwnerId === MockNoteService.testNotes[i].ownerID) {
+        notesObtained[amount] = MockNoteService.testNotes[i];
+        amount++;
+      }
+    }
+   return of(notesObtained);
+
   }
 
 }
