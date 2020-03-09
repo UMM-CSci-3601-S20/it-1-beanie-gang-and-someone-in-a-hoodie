@@ -1,4 +1,4 @@
-import { OnInit, Component, OnDestroy } from '@angular/core';
+import { OnInit, Component, OnDestroy, SecurityContext } from '@angular/core';
 import { Note } from '../notes/note';
 import { OwnerService } from './owner.service';
 import { Owner } from './owner';
@@ -26,7 +26,8 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   id: string;
   getOwnerSub: Subscription;
   getNotesSub: Subscription;
-  calendarUrl = this.sanitizer.bypassSecurityTrustResourceUrl('https://calendar.google.com/calendar/embed?mode=week&src=' + this.owner.email);
+  calendarUrl = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL,
+    'https://calendar.google.com/calendar/embed?mode=week&src=' + this.owner.email);
 
 
 
