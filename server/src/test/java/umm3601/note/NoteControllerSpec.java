@@ -93,7 +93,7 @@ public class NoteControllerSpec{
      ));
      testNotes.add(Document.parse("{ "
      + "ownerID: \"owner2_ID\", "
-     + "body: \"I am on sebatacle no office hours\", "
+     + "body: \"I am on sabbatical no office hours\", "
      + "addDate: \"2020-03-07T22:03:38+0000\", "
      + "expireDate: \"2021-03-07T22:03:38+0000\", "
      + "status: \"active\""
@@ -186,5 +186,14 @@ public class NoteControllerSpec{
     assertEquals("2020-03-07T22:03:38+0000", addedNote.getString("addDate"));
     assertEquals("2021-03-07T22:03:38+0000", addedNote.getString("expireDate"));
     assertEquals("active", addedNote.getString("status"));
+  }
+
+  public void editSingleField() throws IOException{
+    mockReq.setAttribute("id", "Owner3_ID");
+    mockReq.setAttribute("body","\"Not many come to my office I offer donuts\"");
+    mockReq.setMethod("PUT");
+
+
+
   }
 }

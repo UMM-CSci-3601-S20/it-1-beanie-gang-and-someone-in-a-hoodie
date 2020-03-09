@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import org.mongojack.JacksonCodecRegistry;
 
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
+import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.NotFoundResponse;
 
 /**
@@ -151,6 +153,41 @@ public class NoteController {
    * Edit an existing note
    */
   public void editNote(Context ctx) {
+    Document toSetDoc = new Document();
+    Document updateDoc = new Document();
+    Map <String, List<String>> attributes = ctx.attributeMap();
+    String id = ctx.pathParam("id");
+    String ownerID = ctx.queryParam("ownerid");
+    Note note;
+
+    try {
+      note = noteCollection.find(eq("_id", new ObjectId(id))).first();
+    } catch(IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested note id wasn't a legal Mongo Object ID.");
+    }
+    if (note == null) {
+      throw new NotFoundResponse("The requested note does not exist.");
+    } else if (note.ownerID != ownerID) {
+      throw new ForbiddenResponse("The requested note does not belong to this owner. It cannot be edited.");
+    } else {
+      if(attributes.containsKey("body")) {
+        toSetDoc.append("body", ctx.attribute("body"));
+      }
+      if(attributes.containsKey("status") && ctx.queryParam("status").matches("^(active|draft|deleted|template)$")){
+        toSetDoc.append("status", ctx.attribute("status"));
+      }
+      if(attributes.containsKey("expireDate") &&
+      ctx.queryParam("expireDate").matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -])\\d\\d\\d\\d")){
+        toSetDoc.append("expireDate", ctx.attribute("expireDate"));
+      }
+
+      updateDoc.append("set", toSetDoc);
+
+      noteCollection.updateOne(eq("_id", id), updateDoc);
+      ctx.status(200);
+      ctx.json(ImmutableMap.of("id", id));
+    }
+
 
   }
 }
