@@ -9,7 +9,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 import io.javalin.Javalin;
-
+import umm3601.owner.OwnerController;
+import umm3601.note.NoteController;
 import umm3601.user.UserController;
 
 public class Server {
@@ -23,7 +24,7 @@ public class Server {
     // Get the MongoDB address and database name from environment variables and
     // if they aren't set, use the defaults of "localhost" and "dev".
     String mongoAddr = System.getenv().getOrDefault("MONGO_ADDR", "localhost");
-    String databaseName = System.getenv().getOrDefault("MONGO_DB", "dev");
+    String databaseName = System.getenv().getOrDefault("MONGO_DB", "team4IterationDev");
 
     // Setup the MongoDB client object with the information we set earlier
     MongoClient mongoClient = MongoClients.create(
@@ -37,6 +38,8 @@ public class Server {
 
     // Initialize dependencies
     UserController userController = new UserController(database);
+    OwnerController ownerController = new OwnerController(database);
+    NoteController noteController = new NoteController(database);
     //UserRequestHandler userRequestHandler = new UserRequestHandler(userController);
 
     Javalin server = Javalin.create().start(4567);
@@ -59,6 +62,32 @@ public class Server {
     server.post("api/users/new", userController::addNewUser);
 
 
+    // ----- Owner routes ----- //
+    // Get specific owner
+    server.get("api/owners/:id", ownerController::getOwner);
+
+    // Delete specific owner
+    server.delete("api/owners/:id", ownerController::deleteOwner);
+
+    // List owners, filtered using query parameters
+    server.get("api/owners", ownerController::getOwners);
+
+    // Add new owner
+    server.post("api/owners/new", ownerController::addNewOwner);
+
+
+    // ----- Note routes ----- //
+    // Get specific note
+    server.get("api/notes/:id", noteController::getNoteById);
+
+    // Delete specific note
+    server.delete("api/notes/:id", noteController::deleteNote);
+
+    // List notes, filtered using query parameters
+    server.get("api/notes", noteController::getNotesByOwner);
+
+    // Add new note
+    server.post("api/notes/new", noteController::addNewNote);
 
     server.exception(Exception.class, (e, ctx) -> {
       ctx.status(500);

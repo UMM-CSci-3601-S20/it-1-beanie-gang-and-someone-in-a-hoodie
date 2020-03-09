@@ -24,6 +24,7 @@ const routes: Routes = [
   {path: 'notes', component: NoteListComponent},
   {path: 'notes/new', component: EditNoteComponent},
   {path: 'notes/:id', component: NotePageComponent},
+  {path: 'notes/edit', component: EditNoteComponent}
 ];
 
 @NgModule({
