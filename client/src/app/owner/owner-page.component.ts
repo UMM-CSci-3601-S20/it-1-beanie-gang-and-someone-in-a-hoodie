@@ -1,5 +1,5 @@
 import { OnInit, Component, OnDestroy } from '@angular/core';
-import { Note } from '../notes/note';
+import { Note, NoteStatus } from '../notes/note';
 import { OwnerService } from './owner.service';
 import { Owner } from './owner';
 import { Subscription } from 'rxjs';
@@ -18,15 +18,42 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   constructor(private ownerService: OwnerService,
               private noteService: NoteService, private route: ActivatedRoute) { }
 
-  // Keys: 'active', 'template', 'deleted', 'draft'
-  public notes: Map<string, Note[]>;
+  public notes: Note[];
 
   owner: Owner;
   id: string;
   getNotesSub: Subscription;
 
+  public serverFilteredNotes: Note[];
+  public filteredNotes: Note[];
 
+  public noteStatus: NoteStatus;
+  public noteAddDate: Date;
+  public noteExpireDate: Date;
+  public noteBody: string;
 
+  public getNotesFromServer(): void {
+    this.unsub();
+    this.getNotesSub = this.noteService.getNotesByOwner(
+      this.id,{
+        status: this.noteStatus,
+        body: this.noteBody
+      }).subscribe(returnedNotes => {
+        this.serverFilteredNotes = returnedNotes;
+        this.updateFilter();
+      }, err => {
+        console.log(err);
+      });
+  }
+
+  public updateFilter(): void {
+    this.filteredNotes = this.noteService.filterNotes(
+      this.serverFilteredNotes,
+      {
+        addDate: this.noteAddDate,
+        expireDate: this.noteExpireDate
+      });
+}
 
   ngOnInit(): void {
     // Subscribe owner's notes
@@ -42,6 +69,12 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
+    if (this.getNotesSub) {
+      this.getNotesSub.unsubscribe();
+    }
+  }
+
+  unsub(): void {
     if (this.getNotesSub) {
       this.getNotesSub.unsubscribe();
     }
