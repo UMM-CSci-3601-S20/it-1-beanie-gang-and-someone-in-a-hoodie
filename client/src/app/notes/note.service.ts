@@ -36,6 +36,7 @@ export class NoteService {
     });
   }
 
+
   /**
    * @param id: _id of the note being retrieved
    * @param ownerID: _id of the owner who is requesting this note (fails if not a match in the note)
@@ -81,6 +82,6 @@ export class NoteService {
   }
 
   // To implement
-  deleteNote()
-  editNote()
+ // deleteNote()
+  //editNote()
 }

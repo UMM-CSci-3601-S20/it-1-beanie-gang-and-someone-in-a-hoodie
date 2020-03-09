@@ -36,12 +36,7 @@ export class MockOwnerService extends OwnerService {
     super(null);
   }
 
-<<<<<<< HEAD
-  getOwners(filters: { name?: string, email?: string, building?: string, officeNumber?: string }): Observable<Owner[]> {
-    // Just return the test users regardless of what filters are passed in
-=======
   getOwners(filters?: { name?: string, email?: string, building?: string, officeNumber?: string }): Observable<Owner[]> {
->>>>>>> owner-page
     return of(MockOwnerService.testOwners);
   }
 
@@ -55,8 +50,5 @@ export class MockOwnerService extends OwnerService {
       return of(null);
     }
   }
-<<<<<<< HEAD
-=======
 
->>>>>>> owner-page
 }
