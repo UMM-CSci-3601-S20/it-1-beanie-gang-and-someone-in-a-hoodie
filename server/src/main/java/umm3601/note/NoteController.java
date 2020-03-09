@@ -108,7 +108,9 @@ public class NoteController {
   public void getNotesByOwner(Context ctx) {
     List<Bson> filters = new ArrayList<Bson>(); // start with a blank JSON document
     if (ctx.queryParamMap().containsKey("ownerid")) {
-      String targetOwnerID = ctx.queryParam("ownerID");
+      System.out.println("QueryParam map contains ownerid" );
+      String targetOwnerID = ctx.queryParam("ownerid");
+      System.out.println(targetOwnerID);
       filters.add(eq("ownerID", targetOwnerID));
     }
     if (ctx.queryParamMap().containsKey("body")) {
