@@ -44,7 +44,7 @@ import io.javalin.http.util.ContextUtil;
 import io.javalin.plugin.json.JavalinJson;
 import umm3601.UnprocessableResponse;
 
-public class NoteControllerSpec{
+public class NoteControllerSpec {
 
   MockHttpServletRequest mockReq = new MockHttpServletRequest();
   MockHttpServletResponse mockRes = new MockHttpServletResponse();
@@ -61,71 +61,41 @@ public class NoteControllerSpec{
   @BeforeAll
   public static void setupAll() {
     String mongoAddr = System.getenv().getOrDefault("MONGO_ADDR", "localhost");
-    mongoClient = MongoClients.create(
-      MongoClientSettings.builder()
-      .applyToClusterSettings(builder ->
-      builder.hosts(Arrays.asList(new ServerAddress(mongoAddr))))
-      .build());
+    mongoClient = MongoClients.create(MongoClientSettings.builder()
+        .applyToClusterSettings(builder -> builder.hosts(Arrays.asList(new ServerAddress(mongoAddr)))).build());
 
     db = mongoClient.getDatabase("test");
   }
 
   @BeforeEach
-  public void setupEach()throws IOException{
-     // Reset our mock request and response objects
-     mockReq.resetAll();
-     mockRes.resetAll();
+  public void setupEach() throws IOException {
+    // Reset our mock request and response objects
+    mockReq.resetAll();
+    mockRes.resetAll();
 
-     MongoCollection<Document> noteDocuments = db.getCollection("notes");
-     noteDocuments.drop();
-     List<Document> testNotes = new ArrayList<>();
-     testNotes.add(Document.parse("{ "
-     + "ownerID: \"owner1_ID\", "
-     + "body: \"I am running 5 minutes late to my non-existent office\", "
-     + "addDate: \"2020-03-07T22:03:38+0000\", "
-     + "expireDate: \"2021-03-20T22:03:38+0000\", "
-     + "status: \"active\""
-     +"}"
-     ));
-     testNotes.add(Document.parse("{ "
-     + "ownerID: \"owner1_ID\", "
-     + "body: \"I am never coming to my office again\", "
-     + "addDate: \"2020-03-07T22:03:38+0000\", "
-     + "expireDate: \"2099-03-07T22:03:38+0000\", "
-     + "status: \"active\""
-     +"}"
-     ));
-     testNotes.add(Document.parse("{ "
-     + "ownerID: \"owner2_ID\", "
-     + "body: \"I am on sabbatical no office hours\", "
-     + "addDate: \"2020-03-07T22:03:38+0000\", "
-     + "expireDate: \"2021-03-07T22:03:38+0000\", "
-     + "status: \"active\""
-     +"}"
-     ));
-     testNotes.add(Document.parse("{ "
-     + "ownerID: \"owner2_ID\", "
-     + "body: \"Go to owner3's office\", "
-     + "addDate: \"2020-03-07T22:03:38+0000\", "
-     + "expireDate: \"2020-03-21T22:03:38+0000\", "
-     + "status: \"active\""
-     +"}"
-     ));
-     testNotes.add(Document.parse("{ "
-     + "ownerID: \"owner3_ID\", "
-     + "body: \"Not many come to my office I offer donuts\", "
-     + "addDate: \"2020-03-07T22:03:38+0000\", "
-     + "expireDate: \"2021-03-07T22:03:38+0000\", "
-     + "status: \"active\""
-     +"}"
-     ));
+    MongoCollection<Document> noteDocuments = db.getCollection("notes");
+    noteDocuments.drop();
+    List<Document> testNotes = new ArrayList<>();
+    testNotes.add(Document
+        .parse("{ " + "ownerID: \"owner1_ID\", " + "body: \"I am running 5 minutes late to my non-existent office\", "
+            + "addDate: \"2020-03-07T22:03:38+0000\", " + "expireDate: \"2021-03-20T22:03:38+0000\", "
+            + "status: \"active\"" + "}"));
+    testNotes.add(Document.parse("{ " + "ownerID: \"owner1_ID\", " + "body: \"I am never coming to my office again\", "
+        + "addDate: \"2020-03-07T22:03:38+0000\", " + "expireDate: \"2099-03-07T22:03:38+0000\", "
+        + "status: \"active\"" + "}"));
+    testNotes.add(Document.parse("{ " + "ownerID: \"owner2_ID\", " + "body: \"I am on sabbatical no office hours\", "
+        + "addDate: \"2020-03-07T22:03:38+0000\", " + "expireDate: \"2021-03-07T22:03:38+0000\", "
+        + "status: \"active\"" + "}"));
+    testNotes.add(Document.parse("{ " + "ownerID: \"owner2_ID\", " + "body: \"Go to owner3's office\", "
+        + "addDate: \"2020-03-07T22:03:38+0000\", " + "expireDate: \"2020-03-21T22:03:38+0000\", "
+        + "status: \"active\"" + "}"));
+    testNotes.add(Document.parse("{ " + "ownerID: \"owner3_ID\", "
+        + "body: \"Not many come to my office I offer donuts\", " + "addDate: \"2020-03-07T22:03:38+0000\", "
+        + "expireDate: \"2021-03-07T22:03:38+0000\", " + "status: \"active\"" + "}"));
     samsNoteId = new ObjectId();
-    BasicDBObject sam = new BasicDBObject("_id",samsNoteId);
-    sam = sam.append("ownerID", "owner3_ID")
-    .append("body", "I am sam")
-    .append("addDate","2020-03-07T22:03:38+0000")
-    .append("expireDate", "2100-03-07T22:03:38+0000")
-    .append("status", "active");
+    BasicDBObject sam = new BasicDBObject("_id", samsNoteId);
+    sam = sam.append("ownerID", "owner3_ID").append("body", "I am sam").append("addDate", "2020-03-07T22:03:38+0000")
+        .append("expireDate", "2100-03-07T22:03:38+0000").append("status", "active");
 
     noteDocuments.insertMany(testNotes);
     noteDocuments.insertOne(Document.parse(sam.toJson()));
@@ -224,7 +194,7 @@ public class NoteControllerSpec{
 
   @Test
   public void editMultipleFields() throws IOException {
-    String reqBody = "{\"status\": \"draft\", \"expireDate\": \"2025-03-07T22:03:38+0000\"}";
+    String reqBody = "{\"body\": \"I am still sam\", \"expireDate\": \"2025-03-07T22:03:38+0000\"}";
     mockReq.setBodyContent(reqBody);
     mockReq.setMethod("PATCH");
 
@@ -238,10 +208,10 @@ public class NoteControllerSpec{
     Document editedNote = db.getCollection("notes").find(eq("_id", samsNoteId)).first();
     assertNotNull(editedNote);
 
-    assertEquals("draft", editedNote.getString("status"));
+    assertEquals("I am still sam", editedNote.getString("body"));
     assertEquals("2025-03-07T22:03:38+0000", editedNote.getString("expireDate"));
 
-    assertEquals("I am sam", editedNote.getString("body"));
+    assertEquals("active", editedNote.getString("status"));
     assertEquals("owner3_ID", editedNote.getString("ownerID"));
     assertEquals("2020-03-07T22:03:38+0000", editedNote.getString("addDate"));
   }
@@ -337,8 +307,7 @@ public class NoteControllerSpec{
   @Test
   public void AddNoteWithoutExpiration() throws IOException {
     String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
-    + "\"addDate\": \"2020-03-07T22:03:38+0000\", "
-    + "\"status\": \"active\" }";
+        + "\"addDate\": \"2020-03-07T22:03:38+0000\", " + "\"status\": \"active\" }";
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");
@@ -367,7 +336,7 @@ public class NoteControllerSpec{
 
   @Test
   public void RemoveExpirationFromNote() throws IOException {
-    mockReq.setBodyContent("{\"expireDate\", null}");
+    mockReq.setBodyContent("{\"expireDate\", \"%00\"}");
     mockReq.setMethod("PATCH");
 
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));
@@ -391,13 +360,12 @@ public class NoteControllerSpec{
 
   @Test
   public void AddExpirationToNote() throws IOException {
-    //This is... a little ugly.  And relies on something else working.  But there isn't a great way of knowing
-    //the ID of another notice without an expiration date.
-
+    // This is... a little ugly. And relies on something else working. But there
+    // isn't a great way of knowing
+    // the ID of another notice without an expiration date.
 
     String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
-    + "\"addDate\": \"2020-03-07T22:03:38+0000\", "
-    + "\"status\": \"active\" }";
+        + "\"addDate\": \"2020-03-07T22:03:38+0000\", " + "\"status\": \"active\" }";
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");
@@ -423,6 +391,85 @@ public class NoteControllerSpec{
     assertEquals("2020-03-07T22:03:38+0000", addedNote.getString("addDate"));
     assertEquals("2021-03-07T22:03:38+0000", addedNote.getString("expireDate"));
     assertEquals("active", addedNote.getString("status"));
+  }
 
+  @Test
+  public void ChangingStatusRemovesExpiration() throws IOException {
+    String reqBody = "{\"status\": \"draft\"}";
+    mockReq.setBodyContent(reqBody);
+    mockReq.setMethod("PATCH");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));
+    noteController.editNote(ctx);
+
+    assertEquals(204, mockRes.getStatus());
+
+    assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", samsNoteId)));
+
+    Document editedNote = db.getCollection("notes").find(eq("_id", samsNoteId)).first();
+    assertNotNull(editedNote);
+
+    assertEquals("draft", editedNote.getString("status"));
+    assertNull(editedNote.getString("expireDate"));
+
+    assertEquals("I am sam", editedNote.getString("body"));
+    assertEquals("owner3_ID", editedNote.getString("ownerID"));
+    assertEquals("2020-03-07T22:03:38+0000", editedNote.getString("addDate"));
+
+  }
+
+  @Test
+  public void AddNewInactiveWithExpiration() throws IOException {
+    String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
+        + "\"addDate\": \"2020-03-07T22:03:38+0000\", " + "\"expireDate\": \"2021-03-07T22:03:38+0000\", "
+        + "\"status\": \"draft\" }";
+
+    mockReq.setBodyContent(testNewNote);
+    mockReq.setMethod("POST");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/new");
+
+    assertThrows(ConflictResponse.class, () -> {
+      noteController.addNewNote(ctx);
+    });
+  }
+
+  @Test
+  public void AddExpirationToInactive() throws IOException {
+
+    String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
+        + "\"addDate\": \"2020-03-07T22:03:38+0000\", " + "\"status\": \"template\" }";
+
+    mockReq.setBodyContent(testNewNote);
+    mockReq.setMethod("POST");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/new");
+
+    noteController.addNewNote(ctx);
+
+    String id = jsonMapper.readValue(ctx.resultString(), ObjectNode.class).get("id").asText();
+    mockRes.resetAll();
+
+    mockReq.setBodyContent("{\"expireDate\": \"2021-03-07T22:03:38+0000\"}");
+    mockReq.setMethod("PATCH");
+    Context ctx2 = ContextUtil.init(mockReq, mockRes, "api/notes/:id",
+        ImmutableMap.of("id", new ObjectId(id).toHexString()));
+
+    assertThrows(ConflictResponse.class, () -> {
+      noteController.editNote(ctx2);
+    });
+
+  }
+
+  @Test
+  public void AddExpirationAndDeactivate() throws IOException {
+    mockReq.setBodyContent("{\"expireDate\": \"2021-03-07T22:03:38+0000\", \"status\": \"draft\"}");
+    mockReq.setMethod("PATCH");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));
+
+    assertThrows(ConflictResponse.class, () -> {
+      noteController.editNote(ctx);
+    });
   }
 }
