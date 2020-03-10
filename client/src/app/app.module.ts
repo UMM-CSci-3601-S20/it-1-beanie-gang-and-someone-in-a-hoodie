@@ -47,6 +47,7 @@ import { NoteListComponent } from './notes/note-list.component';
 import { NoteService } from './notes/note.service';
 import { EditNoteComponent } from './notes/edit-note.component';
 import { NotePageComponent } from './notes/note-page.component';
+import { AddNoteComponent } from './notes/add-note.component';
 
 // Other
 import { HttpClientModule } from '@angular/common/http';
@@ -86,6 +87,7 @@ const MATERIAL_MODULES: any[] = [
     NoteListComponent,
     EditNoteComponent,
     NotePageComponent,
+    AddNoteComponent,
   ],
   imports: [
     BrowserModule,
