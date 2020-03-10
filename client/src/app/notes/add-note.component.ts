@@ -14,7 +14,7 @@ import { Owner } from '../owner/owner';
 })
 export class AddNoteComponent implements OnInit {
 
-  @Input() owner_id: string = null;
+  @Input() owner: Owner;
 
   addNoteForm: FormGroup;
   note: Note;
@@ -30,6 +30,7 @@ export class AddNoteComponent implements OnInit {
 
     body: [,
       {type: 'required', message: 'Body is required'},
+      {type: 'minLength', message: 'Body must no be empty'},
       {type: 'maxLength', message: 'Cannot exceed 1000 characters'}
     ],
 
@@ -51,11 +52,13 @@ export class AddNoteComponent implements OnInit {
 
       body: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.max(1000),
+        Validators.minLength(1),
+        Validators.maxLength(1000),
       ])),
 
+      //expireDate: new FormControl()
 
-      expireDate: new FormControl('2021-03-06T22:03:38+0000', Validators.compose([])),
+
     });
 
   }
@@ -67,14 +70,15 @@ export class AddNoteComponent implements OnInit {
 
   submitForm() {
     const noteToAdd: Note = this.addNoteForm.value;
-    noteToAdd.ownerID = this.owner_id; // get owner ID from somewhere, put here
+    noteToAdd.ownerID = this.owner._id; // get owner ID from somewhere, put here
     noteToAdd.addDate = new Date();
+    noteToAdd.expireDate = new Date('2025-03-06T22:03:38+0000');
 
     this.noteService.addNewNote(noteToAdd).subscribe(newID => {
       this.snackBar.open('Added Note ', null, {
         duration: 2000,
       });
-      this.router.navigate(['/owner/', this.owner_id]);
+      this.router.navigate(['/owner/', this.owner]);
     }, err => {
       this.snackBar.open('Failed to add the note', null, {
         duration: 2000,

@@ -29,15 +29,6 @@
         </div>
       </mat-card-content>
   </mat-card>
-  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
-    <!-- list of displayed notes -->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title class="note-list-title">Current Notes:</mat-card-title>
-      </mat-card-header>
-    </mat-card>
-  </div>
-
 </div>
 
 <div fxLayout="row">
@@ -47,21 +38,21 @@
       <!-- List view -->
       <mat-card class="'list'">
         <mat-card-content>
-          <mat-nav-list class="note-nav-list">
+          <mat-list class="note-nav-list">
             <h3 mat-subheader>Notes</h3>
-            <a mat-list-item *ngFor="let note of this.filteredNotes" [routerLink]="['/notes', note._id]" class="note-list-item">
+            <mat-list-item *ngFor="let note of this.filteredNotes" [routerLink]="['/notes', note._id]" class="note-list-item">
               <h3 matLine class="note-list-status"> {{note.status}} </h3>
               <p matLine class="note-list-body"> {{note.body}} </p>
               <p matLine class="note-list-expiration-date">{{note.expireDate}}</p>
-            </a>
-          </mat-nav-list>
+            </mat-list-item>
+          </mat-list>
         </mat-card-content>
       </mat-card>
   </div>
 </div>
 <div fxLayout="row">
   <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
-    <app-add-note [owner_id]="this.owner._id" class="add-note" fxFlex="1 1 280px">
+    <app-add-note owner="this.owner._id" class="add-note" fxFlex="1 1 280px">
 
     </app-add-note>
 </div>

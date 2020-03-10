@@ -8,6 +8,7 @@ import { OwnerListComponent } from './owner/owner-list.component';
 import { AddOwnerComponent } from './owner/add-owner.component';
 import { OwnerPageComponent } from './owner/owner-page.component';
 import { EditNoteComponent } from './notes/edit-note.component';
+import { AddNoteComponent } from './notes/add-note.component';
 
 
 

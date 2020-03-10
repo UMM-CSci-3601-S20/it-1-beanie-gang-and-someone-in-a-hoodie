@@ -1,7 +1,7 @@
 <!-- example from
 https://github.com/AngularTemplates/angular-forms-and-validations/blob/master/src/app/form-component/form.component.html
 is potentially helpful and contributed to the shaping of this example -->
-    <form [formGroup]="addNoteForm" (ngSubmit)="submitForm();">
+<form [formGroup]="addNoteForm" (ngSubmit)="submitForm();">
     <mat-card class="add-note-card">
         <mat-card-header>
           <mat-card-title class="add-note-title">New Note</mat-card-title>
@@ -14,11 +14,9 @@ is potentially helpful and contributed to the shaping of this example -->
               <mat-option value="draft">Draft</mat-option>
               <mat-option value="template">Template</mat-option>
             </mat-select>
-            <mat-error *ngFor="let validation of add_note_validation_messages.status">
-              <mat-error class="error-message" id="status-error"
-                        *ngIf="addNoteForm.get('status').hasError(validation.type) && (addNoteForm.get('status').dirty || addNoteForm.get('status').touched)">
-                {{validation.message}}
-              </mat-error>
+            <mat-error *ngIf="addNoteForm.get('status').hasError('required')">You must make a selection</mat-error>
+            <mat-error *ngIf="addNoteForm.get('status').hasError('pattern') && !addNoteForm.get('status').hasError('required')">
+              Your selection is invalid
             </mat-error>
           </mat-form-field>
 
@@ -26,18 +24,8 @@ is potentially helpful and contributed to the shaping of this example -->
             <mat-label>Body</mat-label>
             <input matInput #input id="bodyField" placeholder="Body"
                   formControlName="body" required>
-            <mat-error *ngFor="let validation of add_note_validation_messages.body">
-              <mat-error class="error-message" id="body-error"
-                        *ngIf="addNoteForm.get('body').hasError(validation.type) && (addNoteForm.get('body').dirty || addNoteForm.get('body').touched)">
-                {{validation.message}}
-              </mat-error>
-            </mat-error>
-          </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Expire date</mat-label>
           </mat-form-field>
-
 
         </mat-card-content>
         <mat-card-actions align="end">
@@ -47,5 +35,6 @@ is potentially helpful and contributed to the shaping of this example -->
           </button>
         </mat-card-actions>
     </mat-card>
-  </form>
+</form>
+
 
