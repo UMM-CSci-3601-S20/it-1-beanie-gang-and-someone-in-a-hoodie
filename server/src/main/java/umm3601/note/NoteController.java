@@ -145,7 +145,7 @@ public class NoteController {
       .check((note) -> note.ownerID != null && note.ownerID.length() == 24) // 24 character hex ID
       .check((note) -> note.body != null && note.body.length() > 0) // Make sure the body is not empty
       .check((note) -> note.addDate != null && note.addDate.matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -])\\d\\d\\d\\d")) // Regex to match an ISO 8601 time string
-      .check((note) -> note.expireDate != null && note.expireDate.matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -])\\d\\d\\d\\d")) // Regex to match an ISO 8601 time string
+      .check((note) -> note.expireDate == null || note.expireDate.matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -])\\d\\d\\d\\d")) // Regex to match an ISO 8601 time string
       .check((note) -> note.status.matches("^(active|draft|deleted|template)$")) // Status should be one of these
       .get();
 
@@ -161,6 +161,7 @@ public class NoteController {
 
     Document inputDoc = ctx.bodyAsClass(Document.class); //throws 400 error
     Document toEdit = new Document();
+    Document toReturn = new Document();
 
     String id = ctx.pathParam("id");
     Note note;
@@ -197,13 +198,15 @@ public class NoteController {
           toEdit.append("body", inputDoc.get("body"));
         }
         if(inputDoc.containsKey("expireDate")){
-          if(inputDoc.get("expireDate").toString() //This assumes that we're using the same string encoding they are, but it's our own API we should be fine.
+          if(inputDoc.get("expireDate") == null) {
+            toReturn.append("$unset", new Document("expireDate", "")); //If expireDate is specifically included with a null value, remove the expiration date.
+          } else if(inputDoc.get("expireDate").toString() //This assumes that we're using the same string encoding they are, but it's our own API we should be fine.
           .matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -])\\d\\d\\d\\d")) {
             toEdit.append("expireDate", inputDoc.get("expireDate"));
           } else {
             throw new UnprocessableResponse("The 'expireDate' field must contain an ISO 8061 time string.");
           }
-          //When we make input strings nullable, we'll have to edit this to allow nulls to pass.
+
         }
         if(inputDoc.containsKey("status")) {
           if(validStatuses.contains(inputDoc.get("status"))){

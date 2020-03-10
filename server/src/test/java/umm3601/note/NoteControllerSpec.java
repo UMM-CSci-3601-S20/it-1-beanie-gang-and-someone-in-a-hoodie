@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.security.acl.Owner;
@@ -332,4 +333,96 @@ public class NoteControllerSpec{
   // could possibly both be 409?
   // Additionally, should attempting to edit a non-editable field (id, ownerID, or
   // addDate) throw a 422, 409, 400, or 403?
+
+  @Test
+  public void AddNoteWithoutExpiration() throws IOException {
+    String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
+    + "\"addDate\": \"2020-03-07T22:03:38+0000\", "
+    + "\"status\": \"active\" }";
+
+    mockReq.setBodyContent(testNewNote);
+    mockReq.setMethod("POST");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/new");
+
+    noteController.addNewNote(ctx);
+
+    assertEquals(201, mockRes.getStatus());
+
+    String result = ctx.resultString();
+    String id = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
+    assertNotEquals("", id);
+    System.out.println(id);
+
+    assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", new ObjectId(id))));
+
+    Document addedNote = db.getCollection("notes").find(eq("_id", new ObjectId(id))).first();
+    assertNotNull(addedNote);
+    assertEquals("e7fd674c72b76596c75d9f1e", addedNote.getString("ownerID"));
+    assertEquals("Test Body", addedNote.getString("body"));
+    assertEquals("2020-03-07T22:03:38+0000", addedNote.getString("addDate"));
+    assertNull(addedNote.getString("expireDate"));
+    assertEquals("active", addedNote.getString("status"));
+  }
+
+  @Test
+  public void RemoveExpirationFromNote() throws IOException {
+    mockReq.setBodyContent("{\"expireDate\", null}");
+    mockReq.setMethod("PATCH");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));
+
+    noteController.editNote(ctx);
+
+    assertEquals(204, mockRes.getStatus());
+
+    assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", samsNoteId)));
+
+    Document editedNote = db.getCollection("notes").find(eq("_id", samsNoteId)).first();
+    assertNotNull(editedNote);
+
+    assertNull(editedNote.getString("expireDate"));
+
+    assertEquals("active", editedNote.getString("status"));
+    assertEquals("I am sam", editedNote.getString("body"));
+    assertEquals("owner3_ID", editedNote.getString("ownerID"));
+    assertEquals("2020-03-07T22:03:38+0000", editedNote.getString("addDate"));
+  }
+
+  @Test
+  public void AddExpirationToNote() throws IOException {
+    //This is... a little ugly.  And relies on something else working.  But there isn't a great way of knowing
+    //the ID of another notice without an expiration date.
+
+
+    String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
+    + "\"addDate\": \"2020-03-07T22:03:38+0000\", "
+    + "\"status\": \"active\" }";
+
+    mockReq.setBodyContent(testNewNote);
+    mockReq.setMethod("POST");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/new");
+
+    noteController.addNewNote(ctx);
+
+    String id = jsonMapper.readValue(ctx.resultString(), ObjectNode.class).get("id").asText();
+    mockRes.resetAll();
+
+    mockReq.setBodyContent("{\"expireDate\": \"2021-03-07T22:03:38+0000\"}");
+    mockReq.setMethod("PATCH");
+    ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", new ObjectId(id).toHexString()));
+    noteController.editNote(ctx);
+
+    assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", new ObjectId(id))));
+
+    Document addedNote = db.getCollection("notes").find(eq("_id", new ObjectId(id))).first();
+    assertNotNull(addedNote);
+    assertEquals("e7fd674c72b76596c75d9f1e", addedNote.getString("ownerID"));
+    assertEquals("Test Body", addedNote.getString("body"));
+    assertEquals("2020-03-07T22:03:38+0000", addedNote.getString("addDate"));
+    assertEquals("2021-03-07T22:03:38+0000", addedNote.getString("expireDate"));
+    assertEquals("active", addedNote.getString("status"));
+
+  }
 }
