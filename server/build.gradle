@@ -55,6 +55,8 @@ dependencies {
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 
   testImplementation 'com.mockrunner:mockrunner-servlet:2.0.1'
+
+  implementation 'javax.inject:javax.inject:1'
 }
 
 application {

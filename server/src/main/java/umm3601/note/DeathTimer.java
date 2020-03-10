@@ -3,7 +3,7 @@ package umm3601.note;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 public class DeathTimer extends Timer {
 
@@ -28,8 +28,34 @@ public class DeathTimer extends Timer {
 
   public class ExpireTask extends TimerTask {
 
-    @Resource DeathTimer dTimer = getDeathTimerInstance();
+    @Inject
+    DeathTimer dTimer = getDeathTimerInstance();
 
-    public ExpireTask
+    public ExpireTask (Note n) {
+
+    }
+
+    @Override
+    public void run() {
+
+    }
+
+  }
+
+  public class PurgeTask extends TimerTask {
+
+
+    @Inject
+    DeathTimer dTimer = getDeathTimerInstance();
+
+    public PurgeTask (Note n) {
+
+    }
+
+    @Override
+    public void run() {
+
+    }
+
   }
 }
