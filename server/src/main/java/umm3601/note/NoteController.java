@@ -26,9 +26,11 @@ import org.bson.types.ObjectId;
 import org.mongojack.JacksonCodecRegistry;
 
 import io.javalin.http.BadRequestResponse;
+import io.javalin.http.ConflictResponse;
 import io.javalin.http.Context;
 import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.NotFoundResponse;
+import umm3601.UnprocessableResponse;
 
 /**
  * Controller that manages requests for note data (for a specific owner).
@@ -158,9 +160,14 @@ public class NoteController {
   public void editNote(Context ctx) {
 
     Document inputDoc = ctx.bodyAsClass(Document.class); //throws 400 error
+    Document toEdit = new Document();
 
     String id = ctx.pathParam("id");
     Note note;
+
+    if(inputDoc.isEmpty()) {
+      throw new BadRequestResponse("PATCH request must contain a body.");
+    }
 
     try {
       note = noteCollection.find(eq("_id", new ObjectId(id))).first();
@@ -172,13 +179,48 @@ public class NoteController {
     } else {
       HashSet<String> validKeys = new HashSet<String>(Arrays.asList("body", "expireDate", "status"));
       HashSet<String> forbiddenKeys = new HashSet<String>(Arrays.asList("ownerID", "addDate", "_id"));
+      HashSet<String> validStatuses = new HashSet<String>(Arrays.asList("active", "draft", "deleted", "template"));
+      for (String key: inputDoc.keySet()) {
+        if(forbiddenKeys.contains(key)) {
+          throw new BadRequestResponse("Cannot edit the field " + key + ": this field is not editable and should be considered static.");
+        } else if (!(validKeys.contains(key))){
+          throw new ConflictResponse("Cannot edit the nonexistant field " + key + ".");
+        }
+      }
+
+        // At this point, we're taking information from the user and putting it directly into the database.
+        // I'm unsure of how to properly sanitize this; StackOverflow just says to use PreparedStatements instead
+        // of Statements, but thanks to the magic of mongodb I'm not using either.  At this point I'm going to cross
+        // my fingers really hard and pray that this will be fine.
+
+        if(inputDoc.containsKey("body")) {
+          toEdit.append("body", inputDoc.get("body"));
+        }
+        if(inputDoc.containsKey("expireDate")){
+          if(inputDoc.get("expireDate").toString() //This assumes that we're using the same string encoding they are, but it's our own API we should be fine.
+          .matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -])\\d\\d\\d\\d")) {
+            toEdit.append("expireDate", inputDoc.get("expireDate"));
+          } else {
+            throw new UnprocessableResponse("The 'expireDate' field must contain an ISO 8061 time string.");
+          }
+          //When we make input strings nullable, we'll have to edit this to allow nulls to pass.
+        }
+        if(inputDoc.containsKey("status")) {
+          if(validStatuses.contains(inputDoc.get("status"))){
+            toEdit.append("status", inputDoc.get("status"));
+          } else {
+            throw new UnprocessableResponse("The 'status' field must contain one of 'active', 'draft', 'deleted', or 'template'.");
+          }
+        }
+
+      }
 
 
-      noteCollection.updateOne(eq("_id", id), null);
-      ctx.status(200);
-      ctx.json(ImmutableMap.of("id", id));
+      noteCollection.updateOne(eq("_id", new ObjectId(id)), new Document("$set", toEdit));
+      ctx.status(204);
     }
 
-
   }
-}
+
+
+
