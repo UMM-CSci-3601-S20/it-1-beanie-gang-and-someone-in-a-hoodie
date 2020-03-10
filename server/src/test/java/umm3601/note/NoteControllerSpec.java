@@ -35,7 +35,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.javalin.http.BadRequestResponse;
+import io.javalin.http.ConflictResponse;
 import io.javalin.http.Context;
+import io.javalin.http.HttpResponseException;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.http.util.ContextUtil;
 import io.javalin.plugin.json.JavalinJson;
@@ -188,12 +190,128 @@ public class NoteControllerSpec{
     assertEquals("active", addedNote.getString("status"));
   }
 
+  @Test
   public void editSingleField() throws IOException{
-    mockReq.setAttribute("id", "Owner3_ID");
-    mockReq.setAttribute("body","\"Not many come to my office I offer donuts\"");
-    mockReq.setMethod("PUT");
+    String reqBody = "{\"body\": \"I am not sam anymore\"}";
+    mockReq.setBodyContent(reqBody);
+    mockReq.setMethod("PATCH");
+    //Because we're partially altering an object, we make a body with just the alteration and use the PATCH (not PUT) method
 
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));
+    noteController.editNote(ctx);
 
+    assertEquals(204, mockRes.getStatus());
+    //We don't have a good way to return just the edited object, so we return nothing in the body and show that with a 204 response.
 
+    assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", samsNoteId)));
+    //There should still be exactly one note per id, and the id shouldn't have changed.
+
+    Document editedNote = db.getCollection("notes").find(eq("_id", samsNoteId)).first();
+    assertNotNull(editedNote);
+    //The note should still actually exist
+
+    assertEquals("\"I am not sam anymore\"", editedNote.getString("body"));
+    //The edited field should show the new value
+
+    assertEquals("Owner3_ID", editedNote.getString("ownerID"));
+    assertEquals("active", editedNote.getString("status"));
+    assertEquals("2020-03-07T22:03:38+0000", editedNote.getString("addDate"));
+    assertEquals("2100-03-07T22:03:38+0000", editedNote.getString("expireDate"));
+    //all other fields should be untouched
+  }
+
+  @Test
+  public void editMultipleFields() throws IOException{
+    String reqBody = "{\"status\": \"draft\", \"expireDate\": \"2025-03-07T22:03:38+0000\"}";
+    mockReq.setBodyContent(reqBody);
+    mockReq.setMethod("PATCH");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));
+    noteController.editNote(ctx);
+
+    assertEquals(204, mockRes.getStatus());
+
+    assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", samsNoteId)));
+
+    Document editedNote = db.getCollection("notes").find(eq("_id", samsNoteId)).first();
+    assertNotNull(editedNote);
+
+    assertEquals("draft", editedNote.getString("status"));
+    assertEquals("2025-03-07T22:03:38+0000", editedNote.getString("expireDate"));
+
+    assertEquals("I am sam", editedNote.getString("body"));
+    assertEquals("Owner3_ID", editedNote.getString("ownerID"));
+    assertEquals("2020-03-07T22:03:38+0000", editedNote.getString("addDate"));
+  }
+
+  @Test
+  public void editMissingId() throws IOException{
+    String reqBody = "{}";
+    mockReq.setBodyContent(reqBody);
+    mockReq.setMethod("PATCH");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", "58af3a600343927e48e87335"));
+
+    assertThrows(NotFoundResponse.class, () -> {
+      noteController.editNote(ctx);
+    });
+  }
+
+  @Test
+  public void editBadId() throws IOException{
+    String reqBody = "{}";
+    mockReq.setBodyContent(reqBody);
+    mockReq.setMethod("PATCH");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", "this garbage isn't an id!"));
+
+    assertThrows(BadRequestResponse.class, () -> {
+      noteController.editNote(ctx);
+    });
+  }
+
+  @Test
+  public void editIdWithMalformedBody() throws IOException{
+    mockReq.setBodyContent("This isn't parsable as a document");
+    mockReq.setMethod("PATCH");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));
+
+    assertThrows(BadRequestResponse.class, () -> {
+      noteController.editNote(ctx);
+    });
+  }
+
+  @Test
+  public void editIdWithInvalidValue() throws IOException{
+    mockReq.setBodyContent("{\"expireDate\": \"not actually a date\"}");
+    mockReq.setMethod("PATCH");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));
+
+    assertThrows(HttpResponseException.class, () -> {
+      noteController.editNote(ctx);
+    });
+    assertEquals(422, mockRes.getStatus());
+    //HTTP 422 Unprocessable Entity: the entity could be syntactically parsed but was semantically garbage.
+    //In this case, it's because a non-date-string was attempted to be inserted into a location that requires
+    //a date string.
+  }
+
+  @Test
+  public void editIdWithBadKeys() throws IOException{
+    mockReq.setBodyContent("{\"badKey\": \"irrelevant value\"}");
+    mockReq.setMethod("PATCH");
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));
+
+    assertThrows(ConflictResponse.class, () -> {
+      noteController.editNote(ctx);
+    });
+    //ConflictResponse represents a 409 error, in this case an attempt to edit a nonexistent field,
+    //and no existing fields.
+
+    //The 422 and 409 errors could be switched between these conditions, or they could possibly both be 409?
+    //Additionally, should attempting to edit a non-editable field (id, ownerID, or addDate) throw a 422, 409, 400, or 403?
   }
 }

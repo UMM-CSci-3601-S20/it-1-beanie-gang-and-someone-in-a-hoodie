@@ -8,9 +8,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.client.MongoCollection;
@@ -95,7 +98,7 @@ public class NoteController {
     if (note == null) {
       throw new NotFoundResponse("The requested does not exist.");
     } else if (note.ownerID != ownerID) {
-      throw new NotFoundResponse("The requested note does not belong to this owner. It cannot be deleted.");
+      throw new ForbiddenResponse("The requested note does not belong to this owner. It cannot be deleted.");
     } else {
       noteCollection.deleteOne(eq("_id", new ObjectId(id)));
     }
@@ -153,11 +156,10 @@ public class NoteController {
    * Edit an existing note
    */
   public void editNote(Context ctx) {
-    Document toSetDoc = new Document();
-    Document updateDoc = new Document();
-    Map <String, List<String>> attributes = ctx.attributeMap();
+
+    Document inputDoc = ctx.bodyAsClass(Document.class); //throws 400 error
+
     String id = ctx.pathParam("id");
-    String ownerID = ctx.queryParam("ownerid");
     Note note;
 
     try {
@@ -167,23 +169,12 @@ public class NoteController {
     }
     if (note == null) {
       throw new NotFoundResponse("The requested note does not exist.");
-    } else if (note.ownerID != ownerID) {
-      throw new ForbiddenResponse("The requested note does not belong to this owner. It cannot be edited.");
     } else {
-      if(attributes.containsKey("body")) {
-        toSetDoc.append("body", ctx.attribute("body"));
-      }
-      if(attributes.containsKey("status") && ctx.queryParam("status").matches("^(active|draft|deleted|template)$")){
-        toSetDoc.append("status", ctx.attribute("status"));
-      }
-      if(attributes.containsKey("expireDate") &&
-      ctx.queryParam("expireDate").matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -])\\d\\d\\d\\d")){
-        toSetDoc.append("expireDate", ctx.attribute("expireDate"));
-      }
+      HashSet<String> validKeys = new HashSet<String>(Arrays.asList("body", "expireDate", "status"));
+      HashSet<String> forbiddenKeys = new HashSet<String>(Arrays.asList("ownerID", "addDate", "_id"));
 
-      updateDoc.append("set", toSetDoc);
 
-      noteCollection.updateOne(eq("_id", id), updateDoc);
+      noteCollection.updateOne(eq("_id", id), null);
       ctx.status(200);
       ctx.json(ImmutableMap.of("id", id));
     }

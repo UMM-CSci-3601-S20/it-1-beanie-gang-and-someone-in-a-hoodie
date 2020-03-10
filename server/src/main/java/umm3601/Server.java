@@ -90,7 +90,7 @@ public class Server {
     server.post("api/notes/new", noteController::addNewNote);
 
     // Update a note
-    server.put("api/notes/:id", noteController::editNote);
+    server.patch("api/notes/:id", noteController::editNote);
 
     server.exception(Exception.class, (e, ctx) -> {
       ctx.status(500);
