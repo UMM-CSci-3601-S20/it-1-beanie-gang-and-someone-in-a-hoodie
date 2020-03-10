@@ -1,4 +1,7 @@
 import { OnInit, Component, OnDestroy } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { Note, NoteStatus } from '../notes/note';
 import { OwnerService } from './owner.service';
 import { Owner } from './owner';
