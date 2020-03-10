@@ -336,7 +336,7 @@ public class NoteControllerSpec {
 
   @Test
   public void RemoveExpirationFromNote() throws IOException {
-    mockReq.setBodyContent("{\"expireDate\", \"%00\"}");
+    mockReq.setBodyContent("{\"expireDate\": null}");
     mockReq.setMethod("PATCH");
 
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", samsNoteId.toHexString()));

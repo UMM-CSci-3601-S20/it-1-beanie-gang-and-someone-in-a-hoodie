@@ -225,7 +225,7 @@ public class NoteController {
         }
 
         if(inputDoc.containsKey("expireDate")){
-          if(inputDoc.get("expireDate") == "") {
+          if(inputDoc.get("expireDate") == null) {
             toReturn.append("$unset", new Document("expireDate", "")); //If expireDate is specifically included with a null value, remove the expiration date.
           } else if (!(noteStatus.equals("active"))) {
             throw new ConflictResponse("Expiration dates can only be assigned to active notices.");
@@ -244,7 +244,10 @@ public class NoteController {
       //If the message includes a change to status or expiration date, update timers here
 
 
-      noteCollection.updateOne(eq("_id", new ObjectId(id)), new Document("$set", toEdit));
+      if(!(toEdit.isEmpty())) {
+        toReturn.append("$set", toEdit);
+      }
+      noteCollection.updateOne(eq("_id", new ObjectId(id)), toReturn);
       ctx.status(204);
     }
 
