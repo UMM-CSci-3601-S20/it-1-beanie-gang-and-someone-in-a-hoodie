@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
 
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.client.MongoCollection;
@@ -172,6 +173,11 @@ public class NoteController {
 
     try {
       note = noteCollection.find(eq("_id", new ObjectId(id))).first();
+      // This really isn't the right way to do things.  Retrieving the database object
+      // in order to check if it exists is inefficient.  We will need to do this at some
+      // point, in order to enfore non-active notices not gaining expiration dates--but
+      // we can probably move that later.  It's a question of: do the expensive thing always;
+      // or do the cheap thing always, and sometimes the expensive thing as well.
     } catch(IllegalArgumentException e) {
       throw new BadRequestResponse("The requested note id wasn't a legal Mongo Object ID.");
     }
@@ -224,6 +230,5 @@ public class NoteController {
     }
 
   }
-
 
 
