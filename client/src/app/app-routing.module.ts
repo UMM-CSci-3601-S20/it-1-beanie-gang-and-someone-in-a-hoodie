@@ -7,9 +7,8 @@ import { AddUserComponent } from './users/add-user.component';
 import { OwnerListComponent } from './owner/owner-list.component';
 import { AddOwnerComponent } from './owner/add-owner.component';
 import { OwnerPageComponent } from './owner/owner-page.component';
-import { NoteListComponent } from './notes/note-list.component';
 import { EditNoteComponent } from './notes/edit-note.component';
-import { NotePageComponent } from './notes/note-page.component';
+import { AddNoteComponent } from './notes/add-note.component';
 
 
 
@@ -21,10 +20,9 @@ const routes: Routes = [
   {path: 'owners', component: OwnerListComponent},
   {path: 'owners/new', component: AddOwnerComponent},
   {path: 'owners/:id', component: OwnerPageComponent},
-  {path: 'notes', component: NoteListComponent},
-  {path: 'notes/new', component: EditNoteComponent},
-  {path: 'notes/:id', component: NotePageComponent},
-
+  //{path: 'notes', component: OwnerPageComponent},
+  //{path: 'notes/new', component: EditNoteComponent},
+  {path: 'notes/edit', component: EditNoteComponent}
 ];
 
 @NgModule({

@@ -1,9 +1,9 @@
 export interface Note {
   _id: string;
-  owner: string;
+  ownerID: string;
   body: string;
-  addDate: Date;
-  expireDate: Date;
+  addDate: string;
+  expireDate: string;
   status: NoteStatus;
 
 }
