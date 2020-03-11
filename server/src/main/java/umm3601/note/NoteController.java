@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 
+import javax.inject.Inject;
+
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -37,6 +39,9 @@ import umm3601.UnprocessableResponse;
  * Controller that manages requests for note data (for a specific owner).
  */
 public class NoteController {
+
+  @Inject
+  private static DeathTimer deathTimer;
 
   JacksonCodecRegistry jacksonCodecRegistry = JacksonCodecRegistry.withDefaultObjectMapper();
 
@@ -250,6 +255,40 @@ public class NoteController {
       noteCollection.updateOne(eq("_id", new ObjectId(id)), toReturn);
       ctx.status(204);
     }
+
+
+    /**
+     * Silently purge a single notice from the database.
+     *
+     * A helper function which should never be called directly.
+     * This function is not guaranteed to behave well if given an incorrect
+     * or invalid argument.
+     *
+     * @param id the id of the note to be deleted.
+     */
+    protected void singleDelete(String id) {
+      noteCollection.deleteOne(eq("_id", new ObjectId(id)));
+    }
+
+
+
+    /**
+     * Flags a single notice as deleted.
+     *
+     * A helper function which should never be called directly.
+     * Note that this calls UpdateTimerStatus on said note.
+     * This function is not guaranteed to behave well
+     * if given an incorrect or invalid argument.
+     *
+     * @param id the id of the note to be flagged.
+     */
+    protected void flagOneForDeletion(String id) {
+      noteCollection.updateOne(eq("_id", new ObjectId(id)),
+       new Document("$set", new Document("status", "deleted").append("expireDate", null)));
+      deathTimer.updateTimerStatus(noteCollection.find(eq("_id", new ObjectId(id))).first());
+    }
+
+
 
   }
 

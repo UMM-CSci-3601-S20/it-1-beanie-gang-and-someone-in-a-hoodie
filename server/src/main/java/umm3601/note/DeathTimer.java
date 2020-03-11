@@ -22,7 +22,7 @@ public class DeathTimer extends Timer {
 
   private static DeathTimer deathTimerInstance = new DeathTimer();
 
-  private DeathTimer() {super(true);} //Starts as a daemon
+  private DeathTimer() {super(true);} //Start as a daemon
 
   public static DeathTimer getDeathTimerInstance() {
     return deathTimerInstance;
