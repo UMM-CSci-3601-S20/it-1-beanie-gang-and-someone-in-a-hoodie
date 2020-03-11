@@ -27,14 +27,6 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 // Home
 import { HomeComponent } from './home/home.component';
 
-// User
-import { UserListComponent } from './users/user-list.component';
-import { UserService } from './users/user.service';
-import { UserProfileComponent } from './users/user-profile.component';
-import { AddUserComponent } from './users/add-user.component';
-import { UserCardComponent } from './users/user-card.component';
-
-
 // Owner
 import { OwnerListComponent } from './owner/owner-list.component';
 import { OwnerService } from './owner/owner.service';
@@ -74,10 +66,6 @@ const MATERIAL_MODULES: any[] = [
   declarations: [
     AppComponent,
     HomeComponent,
-    UserListComponent,
-    UserCardComponent,
-    UserProfileComponent,
-    AddUserComponent,
     OwnerListComponent,
     AddOwnerComponent,
     OwnerNoticesComponent,
@@ -97,7 +85,6 @@ const MATERIAL_MODULES: any[] = [
     LayoutModule,
   ],
   providers: [
-    UserService,
     OwnerService,
     NoteService,
   ],
