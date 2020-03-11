@@ -11,7 +11,6 @@ import com.mongodb.client.MongoDatabase;
 import io.javalin.Javalin;
 import umm3601.owner.OwnerController;
 import umm3601.note.NoteController;
-import umm3601.user.UserController;
 
 public class Server {
 
@@ -37,10 +36,8 @@ public class Server {
     database = mongoClient.getDatabase(databaseName);
 
     // Initialize dependencies
-    UserController userController = new UserController(database);
     OwnerController ownerController = new OwnerController(database);
     NoteController noteController = new NoteController(database);
-    //UserRequestHandler userRequestHandler = new UserRequestHandler(userController);
 
     Javalin server = Javalin.create().start(4567);
 
@@ -49,18 +46,6 @@ public class Server {
 
     // Utility routes
     server.get("api", ctx -> ctx.result(appName));
-
-    // Get specific user
-    server.get("api/users/:id", userController::getUser);
-
-    server.delete("api/users/:id", userController::deleteUser);
-
-    // List users, filtered using query parameters
-    server.get("api/users", userController::getUsers);
-
-    // Add new user
-    server.post("api/users/new", userController::addNewUser);
-
 
     // ----- Owner routes ----- //
     // Get specific owner
