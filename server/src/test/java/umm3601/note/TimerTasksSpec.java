@@ -55,15 +55,15 @@ import umm3601.note.DeathTimer.PurgeTask;
 @RunWith(MockitoJUnitRunner.class)
 public class TimerTasksSpec {
   @Mock(name = "noteController")
-  private NoteController mockNoteController;
+  private static NoteController mockNoteController = mock(NoteController.class);
 
   @InjectMocks
   private static DeathTimer deathTimer = DeathTimer.getDeathTimerInstance();
 
-  private ObjectId samsNoteId;
+  private static ObjectId samsNoteId;
 
   @BeforeAll
-  public void setupAll() {
+  public static void setupAll() {
     doNothing().when(mockNoteController).singleDelete(anyString());
     doNothing().when(mockNoteController).flagOneForDeletion(anyString());
   }
@@ -71,9 +71,6 @@ public class TimerTasksSpec {
   @BeforeEach
   public void setupEach() throws IOException {
     samsNoteId = new ObjectId();
-    BasicDBObject sam = new BasicDBObject("_id", samsNoteId);
-    sam = sam.append("ownerID", "owner3_ID").append("body", "I am sam").append("addDate", "2020-03-07T22:03:38+0000")
-        .append("expireDate", "2100-03-07T22:03:38+0000").append("status", "active");
   }
 
 

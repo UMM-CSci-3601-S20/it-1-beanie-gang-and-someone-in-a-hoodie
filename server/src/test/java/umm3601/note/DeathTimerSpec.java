@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.security.acl.Owner;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -61,7 +62,6 @@ public class DeathTimerSpec {
   String thirdNoteID;
   Note fourthNote;
   String fourthNoteID;
-  DateFormat df;
   Date expirationDate;
 
   @Mock
@@ -122,7 +122,7 @@ public class DeathTimerSpec {
   public void AddNewTask() throws IOException {
     try {
       sampleNote.expireDate = "2021-03-07T22:03:38+0000";
-      expirationDate = df.parse("2021-03-07T22:03:38+0000");
+      expirationDate = new SimpleDateFormat().parse("2021-03-07T22:03:38+0000");
     } catch (ParseException e) {
       fail("The provided date string 2021-03-07T22:03:38+0000 couldn't be parsed.");
     }
@@ -169,8 +169,8 @@ public class DeathTimerSpec {
     TimerTask newTask = spyDeathTimer.pendingDeletion.get(sampleNoteID);
     assertEquals(ExpireTask.class, newTask.getClass());
     assertEquals(((ExpireTask) newTask).target, sampleNoteID);
-    verify(spyDeathTimer).schedule(any(ExpireTask.class), df.parse("2021-03-07T22:03:38+0000"));
-    verify(spyDeathTimer).schedule(newTask, df.parse("2025-03-07T22:03:38+0000"));
+    verify(spyDeathTimer).schedule(any(ExpireTask.class), new SimpleDateFormat().parse("2021-03-07T22:03:38+0000"));
+    verify(spyDeathTimer).schedule(newTask, new SimpleDateFormat().parse("2025-03-07T22:03:38+0000"));
 
     } catch (ParseException e) {
       fail("The provided date strings couldn't be parsed.");
@@ -181,7 +181,7 @@ public class DeathTimerSpec {
   public void SingleTaskUnchanged() throws IOException {
     try {
       sampleNote.expireDate = "2021-03-07T22:03:38+0000";
-      expirationDate = df.parse("2021-03-07T22:03:38+0000");
+      expirationDate = new SimpleDateFormat().parse("2021-03-07T22:03:38+0000");
     } catch (ParseException e) {
       fail("The provided date string 2021-03-07T22:03:38+0000 couldn't be parsed.");
     }
@@ -215,8 +215,8 @@ public class DeathTimerSpec {
       assertEquals(((ExpireTask) firstTask).target, sampleNoteID);
       assertEquals(((ExpireTask) secondTask).target, fourthNoteID);
 
-      verify(spyDeathTimer).schedule(firstTask, df.parse(sampleNote.expireDate));
-      verify(spyDeathTimer).schedule(secondTask, df.parse(fourthNote.expireDate));
+      verify(spyDeathTimer).schedule(firstTask, new SimpleDateFormat().parse(sampleNote.expireDate));
+      verify(spyDeathTimer).schedule(secondTask, new SimpleDateFormat().parse(fourthNote.expireDate));
 
 
     } catch (ParseException e) {
@@ -260,7 +260,7 @@ public class DeathTimerSpec {
     assertEquals(ExpireTask.class, secondTask.getClass());
     verify(spyDeathTimer).schedule(firstTask, spyDeathTimer.DELETED_POST_PURGE_DELAY);
     try {
-      verify(spyDeathTimer).schedule(secondTask, df.parse(fourthNote.expireDate));
+      verify(spyDeathTimer).schedule(secondTask, new SimpleDateFormat().parse(fourthNote.expireDate));
     } catch (ParseException e) {
       fail("Failed to parse date string.");
     }

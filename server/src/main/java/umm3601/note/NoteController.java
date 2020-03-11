@@ -41,7 +41,7 @@ import umm3601.UnprocessableResponse;
 public class NoteController {
 
   @Inject
-  private static DeathTimer deathTimer;
+  private static DeathTimer deathTimer = DeathTimer.getDeathTimerInstance();
 
   JacksonCodecRegistry jacksonCodecRegistry = JacksonCodecRegistry.withDefaultObjectMapper();
 
@@ -160,6 +160,7 @@ public class NoteController {
       }
 
       noteCollection.insertOne(newNote);
+      deathTimer.updateTimerStatus(newNote);
       ctx.status(201);
       ctx.json(ImmutableMap.of("id", newNote._id));
   }
@@ -248,11 +249,14 @@ public class NoteController {
 
       //If the message includes a change to status or expiration date, update timers here
 
-
       if(!(toEdit.isEmpty())) {
         toReturn.append("$set", toEdit);
       }
       noteCollection.updateOne(eq("_id", new ObjectId(id)), toReturn);
+      if(toEdit.containsKey("status") || toEdit.containsKey("expireDate")
+      || toReturn.containsKey("$unset")) {
+        deathTimer.updateTimerStatus(noteCollection.find(eq("_id", new ObjectId(id))).first());
+      }
       ctx.status(204);
     }
 

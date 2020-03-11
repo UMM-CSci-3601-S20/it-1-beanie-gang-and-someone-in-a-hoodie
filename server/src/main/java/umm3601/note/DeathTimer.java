@@ -1,11 +1,16 @@
 package umm3601.note;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.checkerframework.checker.units.qual.s;
 
 
 @Singleton
@@ -30,15 +35,8 @@ public class DeathTimer extends Timer {
 
 
   //maps note id to task
-  protected HashMap<String, ? extends TimerTask> pendingDeletion = new HashMap<String, TimerTask>();
+  protected HashMap<String, TimerTask> pendingDeletion = new HashMap<String, TimerTask>();
 
-  public void scheduleExpiration(Note n) {
-
-  }
-
-  public void schedulePurge(Note n) {
-
-  }
 
 
   //In theory, this should be the only function needed in order to work.
@@ -62,7 +60,37 @@ public class DeathTimer extends Timer {
    * @return true if the note now has a timer attached to it, false otherwise.
    */
   public boolean updateTimerStatus(Note n) {
-    return false;
+    String noteStatus = n.status;
+    String noteId = n._id;
+    Boolean output = false;
+    clearKey(noteId);
+
+    if (noteStatus.equals("deleted")) {
+      PurgeTask pt = new PurgeTask(noteId);
+      pendingDeletion.put(noteId, pt);
+      schedule(pt, DELETED_POST_PURGE_DELAY);
+      output = true;
+    } else if (noteStatus.equals("active") && n.expireDate != null) {
+      try {
+        Date expiration = new SimpleDateFormat().parse(n.expireDate);
+        ExpireTask et = new ExpireTask(noteId);
+        pendingDeletion.put(noteId, et);
+        schedule(et, expiration);
+        output=true;
+      } catch (ParseException p) {
+
+      }
+    }
+    return output;
+  }
+
+  private boolean clearKey(String s) {
+    boolean output = false;
+    if(pendingDeletion.containsKey(s)){
+      output = pendingDeletion.get(s).cancel();
+      pendingDeletion.remove(s);
+    }
+    return output;
   }
 
   /**
@@ -75,8 +103,8 @@ public class DeathTimer extends Timer {
   public void clearAllPending() {
     pendingDeletion.forEach((String s, TimerTask tt) -> {
       tt.cancel();
-      pendingDeletion.remove(s);
     });
+    pendingDeletion.clear();
   }
 
 
@@ -96,9 +124,8 @@ public class DeathTimer extends Timer {
 
     @Override
     public void run() {
-
+      noteController.flagOneForDeletion(target);
     }
-
   }
 
   public class PurgeTask extends TimerTask {
@@ -115,7 +142,7 @@ public class DeathTimer extends Timer {
 
     @Override
     public void run() {
-
+      noteController.singleDelete(target);
     }
 
   }
