@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
@@ -54,19 +56,12 @@ import umm3601.note.DeathTimer.PurgeTask;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TimerTasksSpec {
-  @Mock(name = "noteController")
-  private static NoteController mockNoteController = mock(NoteController.class);
+  @Mock(name = "noteController") private NoteController mockNoteController;
 
-  @InjectMocks
-  private static DeathTimer deathTimer = DeathTimer.getDeathTimerInstance();
+  @InjectMocks @Inject private DeathTimer deathTimer;
 
   private static ObjectId samsNoteId;
 
-  @BeforeAll
-  public static void setupAll() {
-    doNothing().when(mockNoteController).singleDelete(anyString());
-    doNothing().when(mockNoteController).flagOneForDeletion(anyString());
-  }
 
   @BeforeEach
   public void setupEach() throws IOException {

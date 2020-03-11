@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
@@ -50,6 +52,8 @@ public class NoteControllerSpec {
   MockHttpServletResponse mockRes = new MockHttpServletResponse();
 
   private NoteController noteController;
+
+  @Inject DeathTimer deathTimer;
 
   private ObjectId samsNoteId;
 

@@ -1,6 +1,5 @@
 package umm3601.note;
 
-import static com.mongodb.client.model.Filters.eq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -9,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -22,6 +22,8 @@ import java.security.acl.Owner;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -29,9 +31,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.google.common.collect.ImmutableMap;
 
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.checkerframework.checker.units.qual.s;
 import org.junit.After;
@@ -41,10 +43,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import umm3601.note.DeathTimer.*;
+import static umm3601.ISODateParser.parseISO;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -53,6 +57,8 @@ import javax.inject.Inject;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeathTimerSpec {
+
+  DateFormat df = new StdDateFormat();
 
   Note sampleNote;
   String sampleNoteID;
@@ -64,11 +70,11 @@ public class DeathTimerSpec {
   String fourthNoteID;
   Date expirationDate;
 
-  @Mock
-  private NoteController mockNoteController;
+  @Mock private NoteController mockNoteController;
+  static DeathTimer deathTimer = DeathTimer.getDeathTimerInstance();
 
-  @Spy
-  private static DeathTimer spyDeathTimer = spy(DeathTimer.class);
+  static DeathTimer spyDeathTimer = spy(deathTimer);
+
 
   @BeforeEach
   public void setupEach() throws IOException {
@@ -120,11 +126,11 @@ public class DeathTimerSpec {
 
   @Test
   public void AddNewTask() throws IOException {
+    sampleNote.expireDate = "2021-03-07T22:03:38+0000";
     try {
-      sampleNote.expireDate = "2021-03-07T22:03:38+0000";
-      expirationDate = new SimpleDateFormat().parse("2021-03-07T22:03:38+0000");
+      expirationDate = df.parse("2021-03-07T22:03:38+0000");
     } catch (ParseException e) {
-      fail("The provided date string 2021-03-07T22:03:38+0000 couldn't be parsed.");
+      fail ("Could not parse the date string.");
     }
 
     assertTrue(spyDeathTimer.updateTimerStatus(sampleNote));
@@ -146,7 +152,7 @@ public class DeathTimerSpec {
     assertFalse(spyDeathTimer.updateTimerStatus(sampleNote));
     assertEquals(0, spyDeathTimer.pendingDeletion.size());
     assertFalse(newTask.cancel());
-    verify(spyDeathTimer, times(1)).schedule(newTask, any(Date.class));
+    verify(spyDeathTimer, times(1)).schedule(eq(newTask), any(Date.class));
   }
 
   @Test
@@ -158,7 +164,6 @@ public class DeathTimerSpec {
 
   @Test
   public void ChangeTask() throws IOException {
-    try {
     sampleNote.expireDate = "2021-03-07T22:03:38+0000";
     assertTrue(spyDeathTimer.updateTimerStatus(sampleNote));
     sampleNote.expireDate = "2025-03-07T22:03:38+0000";
@@ -169,21 +174,21 @@ public class DeathTimerSpec {
     TimerTask newTask = spyDeathTimer.pendingDeletion.get(sampleNoteID);
     assertEquals(ExpireTask.class, newTask.getClass());
     assertEquals(((ExpireTask) newTask).target, sampleNoteID);
-    verify(spyDeathTimer).schedule(any(ExpireTask.class), new SimpleDateFormat().parse("2021-03-07T22:03:38+0000"));
-    verify(spyDeathTimer).schedule(newTask, new SimpleDateFormat().parse("2025-03-07T22:03:38+0000"));
-
+    try {
+          verify(spyDeathTimer).schedule(any(ExpireTask.class), eq(df.parse("2021-03-07T22:03:38+0000")));
+          verify(spyDeathTimer).schedule(newTask, df.parse("2025-03-07T22:03:38+0000"));
     } catch (ParseException e) {
-      fail("The provided date strings couldn't be parsed.");
+      fail("Could not parse the date strings.");
     }
   }
 
   @Test
   public void SingleTaskUnchanged() throws IOException {
+    sampleNote.expireDate = "2021-03-07T22:03:38+0000";
     try {
-      sampleNote.expireDate = "2021-03-07T22:03:38+0000";
-      expirationDate = new SimpleDateFormat().parse("2021-03-07T22:03:38+0000");
+      expirationDate = df.parse("2021-03-07T22:03:38+0000");
     } catch (ParseException e) {
-      fail("The provided date string 2021-03-07T22:03:38+0000 couldn't be parsed.");
+     fail("Could not parse the date string.");
     }
 
     assertTrue(spyDeathTimer.updateTimerStatus(sampleNote));
@@ -198,29 +203,27 @@ public class DeathTimerSpec {
 
   @Test
   public void IndependentTasks() throws IOException {
-    try{
-      sampleNote.expireDate = "2021-03-07T22:03:38+0000";
+    sampleNote.expireDate = "2021-03-07T22:03:38+0000";
 
-      assertTrue(spyDeathTimer.updateTimerStatus(sampleNote));
-      assertTrue(spyDeathTimer.updateTimerStatus(fourthNote));
+    assertTrue(spyDeathTimer.updateTimerStatus(sampleNote));
+    assertTrue(spyDeathTimer.updateTimerStatus(fourthNote));
 
-      assertEquals(2, spyDeathTimer.pendingDeletion.size());
-      assertTrue(spyDeathTimer.pendingDeletion.containsKey(sampleNoteID));
-      assertTrue(spyDeathTimer.pendingDeletion.containsKey(fourthNoteID));
-      TimerTask firstTask = spyDeathTimer.pendingDeletion.get(sampleNoteID);
-      TimerTask secondTask = spyDeathTimer.pendingDeletion.get(fourthNoteID);
+    assertEquals(2, spyDeathTimer.pendingDeletion.size());
+    assertTrue(spyDeathTimer.pendingDeletion.containsKey(sampleNoteID));
+    assertTrue(spyDeathTimer.pendingDeletion.containsKey(fourthNoteID));
+    TimerTask firstTask = spyDeathTimer.pendingDeletion.get(sampleNoteID);
+    TimerTask secondTask = spyDeathTimer.pendingDeletion.get(fourthNoteID);
 
-      assertEquals(ExpireTask.class, firstTask.getClass());
-      assertEquals(ExpireTask.class, secondTask.getClass());
-      assertEquals(((ExpireTask) firstTask).target, sampleNoteID);
-      assertEquals(((ExpireTask) secondTask).target, fourthNoteID);
+    assertEquals(ExpireTask.class, firstTask.getClass());
+    assertEquals(ExpireTask.class, secondTask.getClass());
+    assertEquals(((ExpireTask) firstTask).target, sampleNoteID);
+    assertEquals(((ExpireTask) secondTask).target, fourthNoteID);
 
-      verify(spyDeathTimer).schedule(firstTask, new SimpleDateFormat().parse(sampleNote.expireDate));
-      verify(spyDeathTimer).schedule(secondTask, new SimpleDateFormat().parse(fourthNote.expireDate));
-
-
+    try {
+      verify(spyDeathTimer).schedule(firstTask, df.parse(sampleNote.expireDate));
+      verify(spyDeathTimer).schedule(secondTask, df.parse(fourthNote.expireDate));
     } catch (ParseException e) {
-      fail("Failed to parse date string.");
+      fail("Could not parse the date string.");
     }
   }
 
@@ -260,9 +263,9 @@ public class DeathTimerSpec {
     assertEquals(ExpireTask.class, secondTask.getClass());
     verify(spyDeathTimer).schedule(firstTask, spyDeathTimer.DELETED_POST_PURGE_DELAY);
     try {
-      verify(spyDeathTimer).schedule(secondTask, new SimpleDateFormat().parse(fourthNote.expireDate));
+      verify(spyDeathTimer).schedule(secondTask, df.parse(fourthNote.expireDate));
     } catch (ParseException e) {
-      fail("Failed to parse date string.");
+      fail("Could not parse the date string.");
     }
   }
 

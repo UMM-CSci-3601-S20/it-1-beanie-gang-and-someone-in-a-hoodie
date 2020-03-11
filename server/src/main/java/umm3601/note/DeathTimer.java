@@ -3,6 +3,8 @@ package umm3601.note;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Timer;
@@ -10,24 +12,36 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.fasterxml.jackson.databind.util.StdDateFormat;
+import com.mongodb.client.MongoDatabase;
+
 import org.checkerframework.checker.units.qual.s;
+
+import static umm3601.ISODateParser.parseISO;
 
 
 @Singleton
 public class DeathTimer extends Timer {
 
   public final long ONE_WEEK_MILLIS = 604800000; //1 week, in milliseconds
-
   public final long DELETED_POST_PURGE_DELAY = ONE_WEEK_MILLIS;
   //In order to make it more obvious what to change, if the customer
   //wants deleted notes to 'linger' for a different length of time.
 
-  @Inject
+  private DateFormat ISODateStringFormat = DateFormat.getDateInstance();
+
+
   private NoteController noteController;
+  @Inject void NoteControllerSetup(MongoDatabase db) {
+    noteController = new NoteController(db);
+  }
 
-  private static DeathTimer deathTimerInstance = new DeathTimer();
+  @Inject private static DeathTimer deathTimerInstance = new DeathTimer();
 
-  private DeathTimer() {super(true);} //Start as a daemon
+  protected DeathTimer() {super(true);} //Start as a daemon
+  //Made not private, with the idea that it'll be injected
+  //in actual usage.
+
 
   public static DeathTimer getDeathTimerInstance() {
     return deathTimerInstance;
@@ -37,6 +51,7 @@ public class DeathTimer extends Timer {
   //maps note id to task
   protected HashMap<String, TimerTask> pendingDeletion = new HashMap<String, TimerTask>();
 
+  DateFormat df = new StdDateFormat();
 
 
   //In theory, this should be the only function needed in order to work.
@@ -63,23 +78,25 @@ public class DeathTimer extends Timer {
     String noteStatus = n.status;
     String noteId = n._id;
     Boolean output = false;
+    TimerTask timerTask;
     clearKey(noteId);
 
     if (noteStatus.equals("deleted")) {
-      PurgeTask pt = new PurgeTask(noteId);
-      pendingDeletion.put(noteId, pt);
-      schedule(pt, DELETED_POST_PURGE_DELAY);
+      timerTask = new PurgeTask(noteId);
+      pendingDeletion.put(noteId, timerTask);
+      schedule(timerTask, DELETED_POST_PURGE_DELAY);
       output = true;
     } else if (noteStatus.equals("active") && n.expireDate != null) {
+      Date expiration;
       try {
-        Date expiration = new SimpleDateFormat().parse(n.expireDate);
-        ExpireTask et = new ExpireTask(noteId);
-        pendingDeletion.put(noteId, et);
-        schedule(et, expiration);
-        output=true;
-      } catch (ParseException p) {
-
+        expiration = df.parse(n.expireDate);
+      } catch (ParseException e) {
+        throw new IllegalArgumentException("Unable to parse the note's date", e);
       }
+      timerTask = new ExpireTask(noteId);
+      pendingDeletion.put(noteId, timerTask);
+      schedule(timerTask, expiration);
+      output = true;
     }
     return output;
   }
@@ -124,7 +141,9 @@ public class DeathTimer extends Timer {
 
     @Override
     public void run() {
-      noteController.flagOneForDeletion(target);
+      try{
+        noteController.flagOneForDeletion(target);
+      } catch(Exception e){} //If a task fails, it kills the *timer*
     }
   }
 
@@ -142,7 +161,9 @@ public class DeathTimer extends Timer {
 
     @Override
     public void run() {
-      noteController.singleDelete(target);
+      try{
+        noteController.singleDelete(target);
+      } catch(Exception e){}
     }
 
   }

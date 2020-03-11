@@ -35,25 +35,29 @@ import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.NotFoundResponse;
 import umm3601.UnprocessableResponse;
 
+import static umm3601.ISODateParser.parseISO;
+
 /**
  * Controller that manages requests for note data (for a specific owner).
  */
 public class NoteController {
 
-  @Inject
-  private static DeathTimer deathTimer = DeathTimer.getDeathTimerInstance();
+
+  @Inject private static DeathTimer deathTimer;
 
   JacksonCodecRegistry jacksonCodecRegistry = JacksonCodecRegistry.withDefaultObjectMapper();
 
-  private final MongoCollection<Note> noteCollection;
+  @Inject private final MongoCollection<Note> noteCollection;
 
   /**
    * @param database the database containing the note data
    */
+
   public NoteController(MongoDatabase database) {
     jacksonCodecRegistry.addCodecForClass(Note.class);
     noteCollection = database.getCollection("notes").withDocumentClass(Note.class)
         .withCodecRegistry(jacksonCodecRegistry);
+        deathTimer = DeathTimer.getDeathTimerInstance();
   }
 
   /**
