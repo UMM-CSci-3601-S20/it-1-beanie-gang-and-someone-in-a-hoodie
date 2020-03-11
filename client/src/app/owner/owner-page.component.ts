@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 import { NoteService } from '../notes/note.service';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
-
+import { HttpParameterCodec } from "@angular/common/http";
 @Component({
   selector: 'app-owner-page-component',
   templateUrl: 'owner-page.component.html',
@@ -28,11 +28,21 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   id: string;
 
   getNotesSub: Subscription;
-  calendarUrl = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL,
-    'https://calendar.google.com/calendar/embed?mode=week&src=' + this.owner.email);
+  getOwnerSub: Subscription;
+  public testEmail = 'robi1467@morris.umn.edu';
+  public testUrl ='https://calendar.google.com/calendar/embed?src=robi1467%40morris.umn.edu';
+
+  //calendarUrl = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL, 'https://calendar.google.com/calendar/embed?mode=week&src='
+   //+ 'robi1467%40morris.umn.edu' +
+   //'&ctz=America%2FChicago');
+
+  public calendarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.testUrl);
 
   public serverFilteredNotes: Note[];
   public filteredNotes: Note[];
+
+
+
 
   public noteStatus: NoteStatus;
   public noteAddDate: Date;
@@ -70,7 +80,15 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
         this.getNotesSub.unsubscribe();
       }
       this.getNotesSub = this.noteService.getNotesByOwner(this.id).subscribe(notes => this.notes = notes);
-      this.ownerService.getOwnerById(this.id).subscribe(owners => this.owner = owners);
+    });
+    this.getNotesSub.unsubscribe();
+    this.route.paramMap.subscribe((paramap) =>{
+      this.id = paramap.get('id');
+      if (this.getOwnerSub) {
+        this.getOwnerSub.unsubscribe();
+      }
+      this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe(owner => this.owner = owner);
+      console.log(this.owner.email);
     });
   }
 
@@ -80,11 +98,18 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
     if (this.getNotesSub) {
       this.getNotesSub.unsubscribe();
     }
+    if (this.getOwnerSub) {
+      this.getOwnerSub.unsubscribe();
+    }
   }
 
   unsub(): void {
     if (this.getNotesSub) {
       this.getNotesSub.unsubscribe();
+    }
+
+    if (this.getOwnerSub) {
+      this.getOwnerSub.unsubscribe();
     }
   }
 

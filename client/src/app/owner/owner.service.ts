@@ -32,6 +32,7 @@ export class OwnerService {
     });
   }
   getOwnerById(id: string): Observable<Owner> {
+    console.log('called: ' + id );
     return this.httpClient.get<Owner>(this.ownerUrl + '/' + id);
   }
 
