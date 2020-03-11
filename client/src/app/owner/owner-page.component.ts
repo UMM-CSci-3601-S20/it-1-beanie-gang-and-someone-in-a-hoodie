@@ -23,26 +23,20 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute, private sanitizer: DomSanitizer) { }
 
   public notes: Note[];
+  public serverFilteredNotes: Note[];
+  public filteredNotes: Note[];
+
+  public calendarUrl;
 
   owner: Owner;
   id: string;
 
   getNotesSub: Subscription;
   getOwnerSub: Subscription;
-  public testEmail = 'robi1467@morris.umn.edu';
-  public testUrl ='https://calendar.google.com/calendar/embed?src=robi1467%40morris.umn.edu';
 
   //calendarUrl = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL, 'https://calendar.google.com/calendar/embed?mode=week&src='
    //+ 'robi1467%40morris.umn.edu' +
    //'&ctz=America%2FChicago');
-
-  public calendarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.testUrl);
-
-  public serverFilteredNotes: Note[];
-  public filteredNotes: Note[];
-
-
-
 
   public noteStatus: NoteStatus;
   public noteAddDate: Date;
@@ -72,6 +66,12 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
       });
 }
 
+  public createGmailConnection(gmailUrl: string): void {
+    gmailUrl = gmailUrl.replace("@", "%40"); // Convert owner e-mail to acceptable format for connection to gCalendar
+    gmailUrl = 'https://calendar.google.com/calendar/embed?src=' + gmailUrl; // Connection string
+    this.calendarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(gmailUrl); // Trust the connection string
+  }
+
   ngOnInit(): void {
     // Subscribe owner's notes
     this.route.paramMap.subscribe((pmap) => {
@@ -83,11 +83,10 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
       if (this.getOwnerSub) {
         this.getOwnerSub.unsubscribe();
       }
-      this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe(owners => this.owner = owners);
-
-
-      console.log(this.owner.email);
-
+      this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe( (_owner: Owner) => {
+      this.owner = _owner;
+      this.createGmailConnection(this.owner.email);
+    });
     });
   }
 
