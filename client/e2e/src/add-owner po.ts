@@ -28,5 +28,20 @@ export class AddOwnerPage {
 
   selectMatSelectValue(selectID: string, value: string) {
     const sel = element(by.id(selectID));
+    return sel.click().then(() => {
+      return element(by.css('mat-option[value="' + value + '"]')).click();
+    });
+  }
+
+  clickAddOwner() {
+    return element(by.buttonText('ADD OWNER'));
+  }
+
+  async addOwner(newOwner: TestOwner) {
+    await this.typeInput('nameField', newOwner.name);
+    await this.typeInput('buildingField', newOwner.building);
+    await this.typeInput('officeNumberField', newOwner.officeNumber);
+    await this.typeInput('emailField', newOwner.email);
+    return this.clickAddOwner();
   }
 }
