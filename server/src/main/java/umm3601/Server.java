@@ -67,7 +67,7 @@ public class Server {
     server.get("api/owners/:id", ownerController::getOwner);
 
     // Delete specific owner
-    server.delete("api/owners/:id", ownerController::deleteOwner);
+   // server.delete("api/owners/:id", ownerController::deleteOwner);
 
     // List owners, filtered using query parameters
     server.get("api/owners", ownerController::getOwners);
