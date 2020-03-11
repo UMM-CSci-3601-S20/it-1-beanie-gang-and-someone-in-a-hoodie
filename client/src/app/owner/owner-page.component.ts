@@ -25,6 +25,7 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
 
   owner: Owner;
   id: string;
+
   getNotesSub: Subscription;
 
   public serverFilteredNotes: Note[];
@@ -66,6 +67,7 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
         this.getNotesSub.unsubscribe();
       }
       this.getNotesSub = this.noteService.getNotesByOwner(this.id).subscribe(notes => this.notes = notes);
+      this.ownerService.getOwnerById(this.id).subscribe(owners => this.owner = owners);
     });
   }
 

@@ -134,17 +134,26 @@ public class NoteController {
    * @param ctx a Javalin HTTP context
    */
   public void addNewNote(Context ctx) {
+    System.out.println("Validating like the corona is gonna kill us");
+   System.out.println("something " +ctx.bodyValidator(Note.class).check((note) -> note.ownerID != null && note.ownerID.length() == 24).getValue().ownerID);
+
     Note newNote = ctx.bodyValidator(Note.class)
       .check((note) -> note.ownerID != null && note.ownerID.length() == 24) // 24 character hex ID
-      .check((note) -> note.body != null && note.body.length() > 0) // Make sure the body is not empty
-      .check((note) -> note.addDate != null && note.addDate.matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -])\\d\\d\\d\\d")) // Regex to match an ISO 8601 time string
-      .check((note) -> note.expireDate != null && note.expireDate.matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -])\\d\\d\\d\\d")) // Regex to match an ISO 8601 time string
+      .check((note) -> note.body != null && note.body.length() > 0 && note.body.length() < 1001) // Make sure the body is not empty
+      .check((note)-> note.addDate != null && note.addDate.matches(".*?"))
+      .check((note)->  note.expireDate.matches(".*?"))
+      .check((note) -> note.addDate != null) // Regex to match an ISO 8601 time string
+       // Regex to match an ISO 8601 time string
       .check((note) -> note.status.matches("^(active|draft|deleted|template)$")) // Status should be one of these
       .get();
-
+    System.out.println("Validated note");
       noteCollection.insertOne(newNote);
+      System.out.println("Insert oned");
       ctx.status(201);
+      System.out.println("status 201");
       ctx.json(ImmutableMap.of("id", newNote._id));
+      System.out.println("failed elsewhere");
+
   }
 
   /**

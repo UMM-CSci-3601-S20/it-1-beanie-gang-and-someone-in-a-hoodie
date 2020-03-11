@@ -14,7 +14,7 @@ import { Owner } from '../owner/owner';
 })
 export class AddNoteComponent implements OnInit {
 
-  @Input() owner: Owner;
+  @Input() owner_id: string;
 
   addNoteForm: FormGroup;
   note: Note;
@@ -70,15 +70,16 @@ export class AddNoteComponent implements OnInit {
 
   submitForm() {
     const noteToAdd: Note = this.addNoteForm.value;
-    noteToAdd.ownerID = this.owner._id; // get owner ID from somewhere, put here
-    noteToAdd.addDate = new Date();
-    noteToAdd.expireDate = new Date('2025-03-06T22:03:38+0000');
-
+    noteToAdd.ownerID = this.owner_id; // get owner ID from somewhere, put here
+    noteToAdd.addDate = new Date().toISOString();
+    noteToAdd.expireDate = new Date('2025-03-06T22:03:38+0000').toISOString();
+    console.log('Before open ' + noteToAdd.addDate + ' ' + noteToAdd.expireDate);
     this.noteService.addNewNote(noteToAdd).subscribe(newID => {
+
       this.snackBar.open('Added Note ', null, {
         duration: 2000,
       });
-      this.router.navigate(['/owner/', this.owner]);
+      this.router.navigate(['/owners/', this.owner_id]);
     }, err => {
       this.snackBar.open('Failed to add the note', null, {
         duration: 2000,

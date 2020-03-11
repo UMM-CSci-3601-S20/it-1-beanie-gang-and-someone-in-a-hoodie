@@ -87,6 +87,7 @@ public class Server {
     server.get("api/notes", noteController::getNotesByOwner);
 
     // Add new note
+
     server.post("api/notes/new", noteController::addNewNote);
 
     server.exception(Exception.class, (e, ctx) -> {
