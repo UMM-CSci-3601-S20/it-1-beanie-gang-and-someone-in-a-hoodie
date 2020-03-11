@@ -8,7 +8,7 @@ import { Owner } from './owner';
 import { Subscription, forkJoin } from 'rxjs';
 import { NoteService } from '../notes/note.service';
 import { ActivatedRoute } from '@angular/router';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpParameterCodec } from "@angular/common/http";
 @Component({
   selector: 'app-owner-page-component',
@@ -25,18 +25,13 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   public notes: Note[];
   public serverFilteredNotes: Note[];
   public filteredNotes: Note[];
-
-  public calendarUrl;
+  public GcalURL: string;
 
   owner: Owner;
   id: string;
 
   getNotesSub: Subscription;
   getOwnerSub: Subscription;
-
-  //calendarUrl = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL, 'https://calendar.google.com/calendar/embed?mode=week&src='
-   //+ 'robi1467%40morris.umn.edu' +
-   //'&ctz=America%2FChicago');
 
   public noteStatus: NoteStatus;
   public noteAddDate: Date;
@@ -66,10 +61,13 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
       });
 }
 
-  public createGmailConnection(gmailUrl: string): void {
-    gmailUrl = gmailUrl.replace("@", "%40"); // Convert owner e-mail to acceptable format for connection to gCalendar
+  public createGmailConnection(ownerEmail: string): void {
+    let gmailUrl = ownerEmail.replace("@", "%40"); // Convert owner e-mail to acceptable format for connection to gCalendar
     gmailUrl = 'https://calendar.google.com/calendar/embed?src=' + gmailUrl; // Connection string
-    this.calendarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(gmailUrl); // Trust the connection string
+    this.GcalURL = gmailUrl; // Set the global connection string
+  }
+  public returnSafeLink(): SafeResourceUrl{
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this.GcalURL);  // Return a "safe" link to gCalendar
   }
 
   ngOnInit(): void {
@@ -83,8 +81,8 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
       if (this.getOwnerSub) {
         this.getOwnerSub.unsubscribe();
       }
-      this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe( (_owner: Owner) => {
-      this.owner = _owner;
+      this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe( async (owner: Owner) => {
+      this.owner = owner;
       this.createGmailConnection(this.owner.email);
     });
     });
