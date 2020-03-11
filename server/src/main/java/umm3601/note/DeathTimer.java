@@ -13,7 +13,7 @@ public class DeathTimer extends Timer {
 
   public final long ONE_WEEK_MILLIS = 604800000; //1 week, in milliseconds
 
-  final long DELETED_POST_PURGE_DELAY = ONE_WEEK_MILLIS;
+  public final long DELETED_POST_PURGE_DELAY = ONE_WEEK_MILLIS;
   //In order to make it more obvious what to change, if the customer
   //wants deleted notes to 'linger' for a different length of time.
 
@@ -22,7 +22,7 @@ public class DeathTimer extends Timer {
 
   private static DeathTimer deathTimerInstance = new DeathTimer();
 
-  private DeathTimer() {};
+  private DeathTimer() {super(true);} //Starts as a daemon
 
   public static DeathTimer getDeathTimerInstance() {
     return deathTimerInstance;

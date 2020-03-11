@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -28,16 +29,6 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mongodb.BasicDBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -52,14 +43,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import io.javalin.http.BadRequestResponse;
-import io.javalin.http.ConflictResponse;
-import io.javalin.http.Context;
-import io.javalin.http.HttpResponseException;
-import io.javalin.http.NotFoundResponse;
-import io.javalin.http.util.ContextUtil;
-import io.javalin.plugin.json.JavalinJson;
-import umm3601.UnprocessableResponse;
 import umm3601.note.DeathTimer.*;
 
 import java.util.Timer;
@@ -68,9 +51,7 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NoteExpirationSpec {
-  MockHttpServletRequest mockReq = new MockHttpServletRequest();
-  MockHttpServletResponse mockRes = new MockHttpServletResponse();
+public class DeathTimerSpec {
 
   Note sampleNote;
   String sampleNoteID;
@@ -87,12 +68,10 @@ public class NoteExpirationSpec {
   private NoteController mockNoteController;
 
   @Spy
-  private DeathTimer spyDeathTimer;
+  private static DeathTimer spyDeathTimer = spy(DeathTimer.class);
 
   @BeforeEach
   public void setupEach() throws IOException {
-    mockReq.resetAll();
-    mockRes.resetAll();
     spyDeathTimer.clearAllPending();
     reset(spyDeathTimer); // Necessary to work around deathTimer being a singleton
     mockNoteController = mock(NoteController.class);
@@ -135,15 +114,12 @@ public class NoteExpirationSpec {
   }
 
   @AfterAll
-  public void teardown() {
+  public static void teardown() {
     spyDeathTimer.cancel();
   }
 
-  // ** Tests to internal timer functionality **
-
-
   @Test
-  public void AddNewTimer() throws IOException {
+  public void AddNewTask() throws IOException {
     try {
       sampleNote.expireDate = "2021-03-07T22:03:38+0000";
       expirationDate = df.parse("2021-03-07T22:03:38+0000");
@@ -161,7 +137,7 @@ public class NoteExpirationSpec {
   }
 
   @Test
-  public void RemoveTimer() throws IOException {
+  public void RemoveTask() throws IOException {
     sampleNote.expireDate = "2021-03-07T22:03:38+0000";
     assertTrue(spyDeathTimer.updateTimerStatus(sampleNote));
     TimerTask newTask = spyDeathTimer.pendingDeletion.get(sampleNoteID);
@@ -174,14 +150,14 @@ public class NoteExpirationSpec {
   }
 
   @Test
-  public void NoTimer() throws IOException {
+  public void NoTask() throws IOException {
     assertFalse(spyDeathTimer.updateTimerStatus(sampleNote));
     assertEquals(0, spyDeathTimer.pendingDeletion.size());
     verify(spyDeathTimer, never()).schedule(any(TimerTask.class), any(Date.class));
   }
 
   @Test
-  public void ChangeTimer() throws IOException {
+  public void ChangeTask() throws IOException {
     try {
     sampleNote.expireDate = "2021-03-07T22:03:38+0000";
     assertTrue(spyDeathTimer.updateTimerStatus(sampleNote));
@@ -202,7 +178,7 @@ public class NoteExpirationSpec {
   }
 
   @Test
-  public void SingleTimerUnchanged() throws IOException {
+  public void SingleTaskUnchanged() throws IOException {
     try {
       sampleNote.expireDate = "2021-03-07T22:03:38+0000";
       expirationDate = df.parse("2021-03-07T22:03:38+0000");
@@ -221,7 +197,7 @@ public class NoteExpirationSpec {
   }
 
   @Test
-  public void IndependentTimers() throws IOException {
+  public void IndependentTasks() throws IOException {
     try{
       sampleNote.expireDate = "2021-03-07T22:03:38+0000";
 
@@ -241,17 +217,53 @@ public class NoteExpirationSpec {
 
       verify(spyDeathTimer).schedule(firstTask, df.parse(sampleNote.expireDate));
       verify(spyDeathTimer).schedule(secondTask, df.parse(fourthNote.expireDate));
+
+
     } catch (ParseException e) {
       fail("Failed to parse date string.");
     }
   }
 
+  @Test
+  public void SetPurge() throws IOException{
+    assertTrue(spyDeathTimer.updateTimerStatus(anotherNote));
 
+    assertEquals(1, spyDeathTimer.pendingDeletion.size());
+    assertTrue(spyDeathTimer.pendingDeletion.containsKey(anotherNoteID));
+    TimerTask newTask = spyDeathTimer.pendingDeletion.get(anotherNoteID);
+    assertEquals(PurgeTask.class, newTask.getClass());
+    assertEquals(((PurgeTask) newTask).target, anotherNoteID);
+    verify(spyDeathTimer).schedule(newTask, spyDeathTimer.DELETED_POST_PURGE_DELAY);
+  }
 
-  //Tests to tasks
+  @Test
+  public void ClearPurge() throws IOException {
+    assertTrue(spyDeathTimer.updateTimerStatus(anotherNote));
+    TimerTask newTask = spyDeathTimer.pendingDeletion.get(anotherNoteID);
 
+    anotherNote.status = "active";
+    assertFalse(spyDeathTimer.updateTimerStatus(anotherNote));
+    assertEquals(0, spyDeathTimer.pendingDeletion.size());
+    assertFalse(newTask.cancel());
+    verify(spyDeathTimer, times(1)).schedule(newTask, spyDeathTimer.DELETED_POST_PURGE_DELAY);
 
+  }
 
-
+  @Test
+  public void MixedTasks() throws IOException {
+    assertTrue(spyDeathTimer.updateTimerStatus(anotherNote));
+    assertTrue(spyDeathTimer.updateTimerStatus(fourthNote));
+    assertEquals(2, spyDeathTimer.pendingDeletion.size());
+    TimerTask firstTask = spyDeathTimer.pendingDeletion.get(anotherNoteID);
+    TimerTask secondTask = spyDeathTimer.pendingDeletion.get(fourthNoteID);
+    assertEquals(PurgeTask.class, firstTask.getClass());
+    assertEquals(ExpireTask.class, secondTask.getClass());
+    verify(spyDeathTimer).schedule(firstTask, spyDeathTimer.DELETED_POST_PURGE_DELAY);
+    try {
+      verify(spyDeathTimer).schedule(secondTask, df.parse(fourthNote.expireDate));
+    } catch (ParseException e) {
+      fail("Failed to parse date string.")
+    }
+  }
 
 }
