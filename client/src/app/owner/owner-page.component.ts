@@ -76,10 +76,16 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
     // Subscribe owner's notes
     this.route.paramMap.subscribe((pmap) => {
       this.id = pmap.get('id');
+      if (this.getNotesSub) {
+        this.getNotesSub.unsubscribe();
+      }
+      this.getNotesSub = this.noteService.getNotesByOwner(this.id).subscribe(notes => this.notes = notes);
       if (this.getOwnerSub) {
         this.getOwnerSub.unsubscribe();
       }
-      this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe(owner => this.owner = owner);
+      this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe(owners => this.owner = owners);
+
+
       console.log(this.owner.email);
 
     });

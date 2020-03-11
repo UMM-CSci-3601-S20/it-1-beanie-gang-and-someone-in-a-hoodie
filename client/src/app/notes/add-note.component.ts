@@ -1,4 +1,4 @@
-import { Component, OnInit, Input} from '@angular/core';
+import { Component, OnInit, Input, SystemJsNgModuleLoader} from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -74,12 +74,14 @@ export class AddNoteComponent implements OnInit {
     noteToAdd.addDate = new Date().toISOString();
     noteToAdd.expireDate = new Date('2025-03-06T22:03:38+0000').toISOString();
     console.log('Before open ' + noteToAdd.addDate + ' ' + noteToAdd.expireDate);
+    console.log(this.owner_id);
     this.noteService.addNewNote(noteToAdd).subscribe(newID => {
 
       this.snackBar.open('Added Note ', null, {
         duration: 2000,
       });
       this.router.navigate(['/owners/', this.owner_id]);
+      location.reload();
     }, err => {
       this.snackBar.open('Failed to add the note', null, {
         duration: 2000,

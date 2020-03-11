@@ -143,10 +143,11 @@ public class NoteController {
       .check((note) -> note.status.matches("^(active|draft|deleted|template)$")) // Status should be one of these
       .get();
     System.out.println("Validated note");
+      noteCollection.insertOne(newNote);
       System.out.println("Insert oned");
       ctx.status(201);
+      System.out.println("working");
       ctx.json(ImmutableMap.of("id", newNote._id));
-
   }
 
   /**
