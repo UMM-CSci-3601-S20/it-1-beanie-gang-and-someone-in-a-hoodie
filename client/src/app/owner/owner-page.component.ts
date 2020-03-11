@@ -5,7 +5,7 @@ import { Note, NoteStatus } from '../notes/note';
 import { OnInit, Component, OnDestroy, SecurityContext } from '@angular/core';
 import { OwnerService } from './owner.service';
 import { Owner } from './owner';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { NoteService } from '../notes/note.service';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -81,15 +81,11 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
       }
       this.getNotesSub = this.noteService.getNotesByOwner(this.id).subscribe(notes => this.notes = notes);
     });
-    this.getNotesSub.unsubscribe();
-    this.route.paramMap.subscribe((paramap) =>{
-      this.id = paramap.get('id');
-      if (this.getOwnerSub) {
+    if (this.getOwnerSub) {
         this.getOwnerSub.unsubscribe();
       }
-      this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe(owner => this.owner = owner);
-      console.log(this.owner.email);
-    });
+    this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe(owner => this.owner = owner);
+  //  console.log(this.owner.email);
   }
 
 
