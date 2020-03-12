@@ -31,7 +31,6 @@ import { HomeComponent } from './home/home.component';
 import { OwnerListComponent } from './owner/owner-list.component';
 import { OwnerService } from './owner/owner.service';
 import { AddOwnerComponent } from './owner/add-owner.component';
-import { OwnerNoticesComponent } from './owner/owner-notices.component';
 import { OwnerPageComponent } from './owner/owner-page.component';
 
 // Note
@@ -68,7 +67,6 @@ const MATERIAL_MODULES: any[] = [
     HomeComponent,
     OwnerListComponent,
     AddOwnerComponent,
-    OwnerNoticesComponent,
     OwnerPageComponent,
     EditNoteComponent,
     AddNoteComponent,

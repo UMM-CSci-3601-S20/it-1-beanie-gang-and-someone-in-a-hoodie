@@ -38,6 +38,7 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   public noteExpireDate: Date;
   public noteBody: string;
 
+
   public getNotesFromServer(): void {
     this.unsub();
     this.getNotesSub = this.noteService.getNotesByOwner(
@@ -69,21 +70,33 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   public returnSafeLink(): SafeResourceUrl{
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.GcalURL);  // Return a "safe" link to gCalendar
   }
+  public getName(): string {
+    return this.owner.name;
+  }
+  public getBuilding(): string {
+    return this.owner.building;
+  }
+  public getOfficeNumber(): string {
+    return this.owner.officeNumber;
+  }
+  public getEmail(): string {
+    return this.owner.email;
+  }
 
   ngOnInit(): void {
     // Subscribe owner's notes
     this.route.paramMap.subscribe((pmap) => {
       this.id = pmap.get('id');
-      if (this.getNotesSub) {
-        this.getNotesSub.unsubscribe();
-      }
-      this.getNotesSub = this.noteService.getNotesByOwner(this.id).subscribe(notes => this.notes = notes);
       if (this.getOwnerSub) {
         this.getOwnerSub.unsubscribe();
       }
       this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe( async (owner: Owner) => {
       this.owner = owner;
       this.createGmailConnection(this.owner.email);
+
+      if (this.getNotesSub) {
+        this.getNotesSub.unsubscribe();
+      }
     });
     });
   }

@@ -1,23 +1,24 @@
 <div fxLayout="row">
   <div fxFlex fxFlex.gt-sm="40" fxFlexOffset.gt-sm="10">
-    <mat-card class="owner-card">
+    <mat-card class="owner-card" *ngIf="this.owner" >
       <mat-card-header>
         <mat-card-title class="owner-card-title">DoorBoard Profile</mat-card-title>
       </mat-card-header>
       <mat-card-content id=nameField>
-        Name: {{this.owner.name}}
+        Name: {{getName()}}
       </mat-card-content>
       <mat-card-content id=buildingField>
-        Building: {{this.owner.building}}
+        Building: {{getBuilding()}}
       </mat-card-content>
       <mat-card-content id=officeNumberField>
-        Office Number: {{this.owner.officeNumber}}
+        Office Number: {{getOfficeNumber()}}
       </mat-card-content>
       <mat-card-content id=emailField>
-        E-mail: {{this.owner.email}}
+        E-mail: {{getEmail()}}
       </mat-card-content>
     </mat-card>
   </div>
+
   <div fxFlex fxFlex.gt-sm="40" fxFlexOffset.gt-sm="10">
     <!--google calendar and related-->
 
@@ -28,6 +29,7 @@
     </mat-card>
 
   </div>
+
   <!-- set active to default-->
   <!---search Card???-->
   <mat-card class="search-card">
