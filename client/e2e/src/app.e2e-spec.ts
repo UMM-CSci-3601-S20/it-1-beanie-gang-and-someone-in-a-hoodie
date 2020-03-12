@@ -13,7 +13,7 @@ describe('App', () => {
 
   it('Should have the correct title', () => {
     page.navigateTo();
-    expect(page.getAppTitle()).toEqual('Beanie gang and someone in a hoodie iteration 1');
+    expect(page.getAppTitle()).toEqual('DoorBoard');
   });
 
   it('Should open the sidenav', () => {
