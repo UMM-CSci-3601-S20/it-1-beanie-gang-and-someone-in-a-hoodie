@@ -47,7 +47,7 @@ export class OwnerService {
       filters.name = filters.name.toLowerCase();
 
       filteredOwners = filteredOwners.filter(owner => {
-        return owner.name.toLowerCase().indexOf(filters.name) !== -1;
+        return owner.name.toLowerCase().includes(filters.name);
       });
     }
 
@@ -56,7 +56,7 @@ export class OwnerService {
       filters.email = filters.email.toLowerCase();
 
       filteredOwners = filteredOwners.filter(owner => {
-        return owner.email.toLowerCase().indexOf(filters.email) !== -1;
+        return owner.email.toLowerCase().includes(filters.email);
       });
     }
 
@@ -65,7 +65,7 @@ export class OwnerService {
       filters.building = filters.building.toLowerCase();
 
       filteredOwners = filteredOwners.filter(owner => {
-        return owner.building.toLowerCase().indexOf(filters.building) !== -1;
+        return owner.building.toLowerCase().includes(filters.building);
       });
     }
 
@@ -74,7 +74,7 @@ export class OwnerService {
       filters.officeNumber = filters.officeNumber.toLowerCase();
 
       filteredOwners = filteredOwners.filter(owner => {
-        return owner.officeNumber.toLowerCase().indexOf(filters.officeNumber) !== -1;
+        return owner.officeNumber.toLowerCase().includes(filters.officeNumber);
       });
     }
 

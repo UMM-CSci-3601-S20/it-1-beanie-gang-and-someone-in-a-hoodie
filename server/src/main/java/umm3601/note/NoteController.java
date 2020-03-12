@@ -251,7 +251,7 @@ public class NoteController {
           //This is not the right error to throw here.  It would probably make more sense to throw a
           // 400 or 415.  Possibly throw a 422 on attempts to set the expireDate in the past?
 
-          //This would most likely be done by checking StdDateFormat.parse(inputDoc.get("expireDate").toString()).isAfter(note.addDate)
+          //This would most likely be done by checking new StdDateFormat().parse(inputDoc.get("expireDate").toString()).isAfter(new StdDateFormate().parse(note.addDate))
 
         }
 
