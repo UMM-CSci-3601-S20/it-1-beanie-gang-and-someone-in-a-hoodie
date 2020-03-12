@@ -9,7 +9,7 @@ export class OwnerPage {
     return browser.getCurrentUrl();
   }
 
-  getUserTitle() {
+  getOwnerTitle() {
     const title = element(by.className('owner-list-title')).getText();
     return title;
   }
@@ -35,11 +35,7 @@ export class OwnerPage {
     return card.element(by.className("owner-nav-list")).click();
   }
 
-  changeView(viewType: 'card' | 'list') {
-    return element(by.id('view-type-radio')).element(by.css('mat-radio-button[value="' + viewType + '"]')).click();
-  }
-
-  clickAddUserFAB() {
-    return element(by.className('add-user-fab')).click();
+  clickAddOwnerFAB() {
+    return element(by.className('add-owner-fab')).click();
   }
 }
