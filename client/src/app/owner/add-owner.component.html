@@ -10,7 +10,9 @@ is potentially helpful and contributed to the shaping of this example -->
         </mat-card-header>
         <mat-card-content fxLayout="column">
           <mat-form-field>
-            <mat-label>Name</mat-label>
+            <mat-label>Name
+              <mat-icon>account_circle</mat-icon>
+            </mat-label>
             <input matInput id="nameField" placeholder="Name" formControlName="name"
                   required>
             <mat-error *ngFor="let validation of add_owner_validation_messages.name">
@@ -22,7 +24,9 @@ is potentially helpful and contributed to the shaping of this example -->
           </mat-form-field>
 
           <mat-form-field>
-            <mat-label>Building</mat-label>
+            <mat-label>Building
+              <mat-icon>domain</mat-icon>
+            </mat-label>
             <input matInput #input id="buildingField" placeholder="Building"
                   formControlName="building" required>
             <mat-error *ngFor="let validation of add_owner_validation_messages.building">
@@ -34,7 +38,9 @@ is potentially helpful and contributed to the shaping of this example -->
           </mat-form-field>
 
           <mat-form-field>
-            <mat-label>Office Number</mat-label>
+            <mat-label>Office Number
+              <mat-icon>meeting_room</mat-icon>
+            </mat-label>
             <input matInput #input id="officeNumberField" placeholder="Office Number"
                   formControlName="officeNumber" required>
             <mat-error *ngFor="let validation of add_owner_validation_messages.officeNumber">
@@ -46,7 +52,9 @@ is potentially helpful and contributed to the shaping of this example -->
           </mat-form-field>
 
           <mat-form-field >
-            <mat-label>Email</mat-label>
+            <mat-label>Email
+              <mat-icon>email</mat-icon>
+            </mat-label>
             <input matInput #input id="emailField" placeholder="Email"
                   formControlName="email" required>
             <mat-error *ngFor="let validation of add_owner_validation_messages.email">

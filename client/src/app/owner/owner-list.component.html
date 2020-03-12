@@ -60,8 +60,9 @@
           <mat-nav-list class="owner-nav-list">
             <h3 mat-subheader>Owners</h3>
             <a mat-list-item *ngFor="let owner of this.filteredOwners" [routerLink]="['/owners', owner._id]" class="owner-list-item">
-              <h3 matLine class="owner-list-name"> {{owner.name}} </h3>
-              <p matLine class="owner-list-building"> {{owner.building}} </p>
+              <h3 matLine class="owner-list-name">{{owner.name}}</h3>
+              <p matLine class="owner-list-email">{{owner.email}}</p>
+              <p matLine class="owner-list-building">{{owner.building}} </p>
               <p matLine class="owner-list-officenumber">{{owner.officeNumber}}</p>
             </a>
           </mat-nav-list>
