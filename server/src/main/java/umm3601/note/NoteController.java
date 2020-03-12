@@ -249,7 +249,8 @@ public class NoteController {
             toEdit.append("expireDate", inputDoc.get("expireDate"));
           } else {
             throw new UnprocessableResponse("The 'expireDate' field must contain an ISO 8061 time string.");
-          }
+          } //This is not the right error to throw here.  It would probably make more sense to throw a
+          // 400 or 415.  Possibly throw a 422 on attempts to set the expireDate in the past?
 
         }
 
@@ -261,10 +262,12 @@ public class NoteController {
         toReturn.append("$set", toEdit);
       }
       noteCollection.updateOne(eq("_id", new ObjectId(id)), toReturn);
+      //Should probably only run update if expiration date or status changed
 
       deathTimer.updateTimerStatus(noteCollection.find(eq("_id", new ObjectId(id))).first());
 
       //we're getting the note, we can(should) send it back with a 201 instead of just a 204
+      //alternatively, give 204 if all the changed fields have the same values and 201 otherwise
       ctx.status(204);
     }
 
