@@ -56,7 +56,6 @@ public class OwnerController {
     System.out.println("YOUR OWNER ID IS: " + id);
     try {
       owner = ownerCollection.find(eq("_id", new ObjectId(id))).first();
-      System.out.println(owner.email);
     } catch(IllegalArgumentException e) {
       throw new BadRequestResponse("The requested owner id wasn't a legal Mongo Object ID.");
     }

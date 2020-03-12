@@ -42,6 +42,8 @@ import umm3601.UnprocessableResponse;
 public class NoteController {
 
 
+  private final String ISO_8601_REGEX = "([+-]\\d\\d)?\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d([+, -.])\\d\\d\\d[\\dZ]";
+
   private static DeathTimer deathTimer;
 
   JacksonCodecRegistry jacksonCodecRegistry = JacksonCodecRegistry.withDefaultObjectMapper();
@@ -155,8 +157,8 @@ public class NoteController {
     Note newNote = ctx.bodyValidator(Note.class)
       .check((note) -> note.ownerID != null && note.ownerID.length() == 24) // 24 character hex ID
       .check((note) -> note.body != null && note.body.length() > 0) // Make sure the body is not empty
-      .check((note) -> note.addDate != null && note.addDate.matches("(\\d)(\\d)(\\d)(\\d)-(\\d)(\\d)-(\\d)(\\d)T(\\d)(\\d):(\\d)(\\d):(\\d)(\\d).(\\d)(\\d)(\\d)Z")) // Regex to match an ISO 8601 time string
-      .check((note) -> note.expireDate == null || note.expireDate.matches("(\\d)(\\d)(\\d)(\\d)-(\\d)(\\d)-(\\d)(\\d)T(\\d)(\\d):(\\d)(\\d):(\\d)(\\d).(\\d)(\\d)(\\d)Z")) // Regex to match an ISO 8601 time string
+      .check((note) -> note.addDate != null && note.addDate.matches(ISO_8601_REGEX))
+      .check((note) -> note.expireDate == null || note.expireDate.matches(ISO_8601_REGEX))
       .check((note) -> note.status.matches("^(active|draft|deleted|template)$")) // Status should be one of these
       .get();
 
@@ -169,8 +171,8 @@ public class NoteController {
       }
       noteCollection.insertOne(newNote);
 
-      
-  
+
+
 
       ctx.status(201);
       ctx.json(ImmutableMap.of("id", newNote._id));
