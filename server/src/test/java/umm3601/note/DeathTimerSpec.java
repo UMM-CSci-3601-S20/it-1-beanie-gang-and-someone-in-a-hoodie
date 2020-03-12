@@ -38,12 +38,14 @@ import org.bson.types.ObjectId;
 import org.checkerframework.checker.units.qual.s;
 import org.junit.After;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -71,17 +73,14 @@ public class DeathTimerSpec {
   Date expirationDate;
 
   @Mock private NoteController mockNoteController;
-  static DeathTimer deathTimer = DeathTimer.getDeathTimerInstance();
 
-  static DeathTimer spyDeathTimer = spy(deathTimer);
+  @Spy
+  static DeathTimer spyDeathTimer;
 
 
   @BeforeEach
   public void setupEach() throws IOException {
-    spyDeathTimer.clearAllPending();
-    reset(spyDeathTimer); // Necessary to work around deathTimer being a singleton
-    mockNoteController = mock(NoteController.class);
-
+    MockitoAnnotations.initMocks(this);
     sampleNote = new Note();
     sampleNoteID = new ObjectId().toHexString();
     sampleNote._id = sampleNoteID;
@@ -117,6 +116,12 @@ public class DeathTimerSpec {
 
     expirationDate = new Date();
 
+  }
+
+  @AfterEach
+  public void cleanEach() {
+    spyDeathTimer.clearAllPending();
+    reset(spyDeathTimer); // Necessary to work around deathTimer being a singleton
   }
 
   @AfterAll

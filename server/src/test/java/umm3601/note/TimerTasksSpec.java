@@ -49,23 +49,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import umm3601.note.DeathTimer.ExpireTask;
-import umm3601.note.DeathTimer.PurgeTask;
+import umm3601.note.DeathTimer.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class TimerTasksSpec {
-  @Mock(name = "noteController") private NoteController mockNoteController;
+  @Mock(name = "noteController") NoteController mockNoteController;
 
-  @InjectMocks @Inject private DeathTimer deathTimer;
+  @InjectMocks
+   DeathTimer deathTimer;
 
   private static ObjectId samsNoteId;
-
 
   @BeforeEach
   public void setupEach() throws IOException {
     samsNoteId = new ObjectId();
+    MockitoAnnotations.initMocks(this);
   }
 
 
