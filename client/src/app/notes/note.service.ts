@@ -78,11 +78,14 @@ export class NoteService {
 
   addNewNote(newNote: Note): Observable<string> {
     // Send a post request to add a new note with the note data as the body.
-    const test = this.httpClient.post<{id: string}>(this.noteUrl + '/new', newNote).pipe(map(res => res.id));
+    // const test = this.httpClient.post<{id: string}>(this.noteUrl + '/new', newNote).pipe(map(res => res.id));
     return this.httpClient.post<{id: string}>(this.noteUrl + '/new', newNote).pipe(map(res => res.id));
   }
 
   // To implement
- // deleteNote()
-  //editNote()
+  // deleteNote()
+  // editNote()
+
+  // n.b. the server http redirection and serverside implementation of these features are complete.
+  // howere, deleteNote() is untested.
 }

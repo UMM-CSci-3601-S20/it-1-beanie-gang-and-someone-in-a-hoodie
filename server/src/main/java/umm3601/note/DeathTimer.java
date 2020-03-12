@@ -2,9 +2,6 @@ package umm3601.note;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Timer;
@@ -15,7 +12,6 @@ import javax.inject.Singleton;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.mongodb.client.MongoDatabase;
 
-import org.checkerframework.checker.units.qual.s;
 
 
 @Singleton

@@ -14,6 +14,7 @@ import { Owner } from '../owner/owner';
 })
 export class AddNoteComponent implements OnInit {
 
+
   @Input() owner_id: string;
 
   addNoteForm: FormGroup;
@@ -63,7 +64,8 @@ export class AddNoteComponent implements OnInit {
 
   submitForm() {
     const noteToAdd: Note = this.addNoteForm.value;
-    noteToAdd.ownerID = this.owner_id; // get owner ID from somewhere, put here
+    //const owner_id = this.router.url.substring(9); // trim off "/notes/new/"
+    noteToAdd.ownerID = this.owner_id;
     noteToAdd.addDate = new Date().toISOString();
     this.noteService.addNewNote(noteToAdd).subscribe(newID => {
 

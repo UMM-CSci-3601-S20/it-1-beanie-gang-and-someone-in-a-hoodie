@@ -4,17 +4,12 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.regex;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
+
 
 import javax.inject.Inject;
 
@@ -128,9 +123,7 @@ public class NoteController {
   public void getNotesByOwner(Context ctx) {
     List<Bson> filters = new ArrayList<Bson>(); // start with a blank JSON document
     if (ctx.queryParamMap().containsKey("ownerid")) {
-      System.out.println("QueryParam map contains ownerid" );
       String targetOwnerID = ctx.queryParam("ownerid");
-      System.out.println(targetOwnerID);
       filters.add(eq("ownerID", targetOwnerID));
     }
     if (ctx.queryParamMap().containsKey("body")) {
@@ -254,8 +247,11 @@ public class NoteController {
             toEdit.append("expireDate", inputDoc.get("expireDate"));
           } else {
             throw new UnprocessableResponse("The 'expireDate' field must contain an ISO 8061 time string.");
-          } //This is not the right error to throw here.  It would probably make more sense to throw a
+          }
+          //This is not the right error to throw here.  It would probably make more sense to throw a
           // 400 or 415.  Possibly throw a 422 on attempts to set the expireDate in the past?
+
+          //This would most likely be done by checking new StdDateFormat().parse(inputDoc.get("expireDate").toString()).isAfter(new StdDateFormate().parse(note.addDate))
 
         }
 

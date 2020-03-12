@@ -4,29 +4,20 @@ import static com.mongodb.client.model.Filters.eq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
-import java.security.acl.Owner;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.TimerTask;
-
-import javax.inject.Inject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.google.common.collect.ImmutableMap;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -40,47 +31,42 @@ import com.mongodb.client.MongoDatabase;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.checkerframework.checker.units.qual.s;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ConflictResponse;
 import io.javalin.http.Context;
-import io.javalin.http.HttpResponseException;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.http.util.ContextUtil;
 import io.javalin.plugin.json.JavalinJson;
 import umm3601.UnprocessableResponse;
-import umm3601.note.DeathTimer.ExpireTask;
 
 public class NoteControllerSpec {
 
   MockHttpServletRequest mockReq = new MockHttpServletRequest();
   MockHttpServletResponse mockRes = new MockHttpServletResponse();
 
-
-
-  @Mock(name="dt") DeathTimer dtMock;
+  @Mock(name = "dt")
+  DeathTimer dtMock;
 
   private ObjectId samsNoteId;
 
   static MongoClient mongoClient;
-  @Spy static MongoDatabase db;
-  //I'll be honest this is some real bullshit to make myself able to inject dtMock.
+  @Spy
+  static MongoDatabase db;
+  // I'll be honest this is some real bullshit to make myself able to inject
+  // dtMock.
 
-  @InjectMocks NoteController noteController;
-
+  @InjectMocks
+  NoteController noteController;
 
   static ObjectMapper jsonMapper = new ObjectMapper();
 
@@ -176,7 +162,6 @@ public class NoteControllerSpec {
     String result = ctx.resultString();
     String id = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
     assertNotEquals("", id);
-    System.out.println(id);
 
     assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", new ObjectId(id))));
 
@@ -196,9 +181,7 @@ public class NoteControllerSpec {
     assertEquals("2020-03-07T22:03:38+0000", newNote.addDate);
     assertEquals("2021-03-07T22:03:38+0000", newNote.expireDate);
     assertEquals("active", newNote.status);
-    }
-
-
+  }
 
   @Test
   public void editSingleField() throws IOException {
@@ -268,7 +251,6 @@ public class NoteControllerSpec {
     assertEquals("active", updatedNote.status);
     assertEquals("owner3_ID", updatedNote.ownerID);
     assertEquals("2020-03-07T22:03:38+0000", updatedNote.addDate);
-
 
   }
 
@@ -364,7 +346,6 @@ public class NoteControllerSpec {
   public void AddNoteWithoutExpiration() throws IOException {
     String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
         + "\"addDate\": \"2020-03-07T22:03:38+0000\", " + "\"status\": \"active\" }";
-  
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");
@@ -378,7 +359,6 @@ public class NoteControllerSpec {
     String result = ctx.resultString();
     String id = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
     assertNotEquals("", id);
-    System.out.println(id);
 
     assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", new ObjectId(id))));
 
@@ -469,7 +449,6 @@ public class NoteControllerSpec {
     assertEquals("2021-03-07T22:03:38+0000", editedNote.expireDate);
     assertEquals("active", editedNote.status);
 
-
   }
 
   @Test
@@ -552,5 +531,23 @@ public class NoteControllerSpec {
     assertThrows(ConflictResponse.class, () -> {
       noteController.editNote(ctx);
     });
+
   }
+
+  // Internal helper functions
+    @Test
+    public void FlagSinglePost() throws IOException {
+      noteController.flagOneForDeletion(samsNoteId.toHexString());
+
+      assertEquals("deleted", db.getCollection("notes").find(eq("_id", samsNoteId)).first().getString("status"));
+      verify(dtMock).updateTimerStatus(any(Note.class));
+    }
+
+    @Test
+    public void PurgeSinglePost() throws IOException {
+      noteController.singleDelete(samsNoteId.toHexString());
+
+      assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", samsNoteId)));
+      verify(dtMock).clearKey(samsNoteId.toHexString());
+    }
 }
