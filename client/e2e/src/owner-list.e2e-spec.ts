@@ -49,10 +49,10 @@ describe('Owner list', () => {
   it('Should type something partial in the company filter and check that it returned correct elements', async () => {
     await page.typeInput('owner-building-input', 'House');
 
-    // Go through each of the cards that are being shown and get the companies
+    // Go through each of the cards that are being shown and get the buildings
     const buildings = await page.getOwnerListItems().map(e => e.element(by.className('owner-list-building')).getText());
 
-    // We should see these companies
+    // We should see these buildings
     expect(buildings).toContain('White House');
     expect(buildings).toContain('Dancing House');
   });
