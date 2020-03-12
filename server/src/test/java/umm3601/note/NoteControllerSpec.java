@@ -69,18 +69,19 @@ public class NoteControllerSpec {
   MockHttpServletRequest mockReq = new MockHttpServletRequest();
   MockHttpServletResponse mockRes = new MockHttpServletResponse();
 
-
-
-  @Mock(name="dt") DeathTimer dtMock;
+  @Mock(name = "dt")
+  DeathTimer dtMock;
 
   private ObjectId samsNoteId;
 
   static MongoClient mongoClient;
-  @Spy static MongoDatabase db;
-  //I'll be honest this is some real bullshit to make myself able to inject dtMock.
+  @Spy
+  static MongoDatabase db;
+  // I'll be honest this is some real bullshit to make myself able to inject
+  // dtMock.
 
-  @InjectMocks NoteController noteController;
-
+  @InjectMocks
+  NoteController noteController;
 
   static ObjectMapper jsonMapper = new ObjectMapper();
 
@@ -195,9 +196,7 @@ public class NoteControllerSpec {
     assertEquals("2020-03-07T22:03:38+0000", newNote.addDate);
     assertEquals("2021-03-07T22:03:38+0000", newNote.expireDate);
     assertEquals("active", newNote.status);
-    }
-
-
+  }
 
   @Test
   public void editSingleField() throws IOException {
@@ -267,7 +266,6 @@ public class NoteControllerSpec {
     assertEquals("active", updatedNote.status);
     assertEquals("owner3_ID", updatedNote.ownerID);
     assertEquals("2020-03-07T22:03:38+0000", updatedNote.addDate);
-
 
   }
 
@@ -363,7 +361,6 @@ public class NoteControllerSpec {
   public void AddNoteWithoutExpiration() throws IOException {
     String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
         + "\"addDate\": \"2020-03-07T22:03:38+0000\", " + "\"status\": \"active\" }";
-
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");
@@ -467,7 +464,6 @@ public class NoteControllerSpec {
     assertEquals("2021-03-07T22:03:38+0000", editedNote.expireDate);
     assertEquals("active", editedNote.status);
 
-
   }
 
   @Test
@@ -550,5 +546,23 @@ public class NoteControllerSpec {
     assertThrows(ConflictResponse.class, () -> {
       noteController.editNote(ctx);
     });
+
   }
+
+  // Internal helper functions
+    @Test
+    public void FlagSinglePost() throws IOException {
+      noteController.flagOneForDeletion(samsNoteId.toHexString());
+
+      assertEquals("deleted", db.getCollection("notes").find(eq("_id", samsNoteId)).first().getString("status"));
+      verify(dtMock).updateTimerStatus(any(Note.class));
+    }
+
+    @Test
+    public void PurgeSinglePost() throws IOException {
+      noteController.singleDelete(samsNoteId.toHexString());
+
+      assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", samsNoteId)));
+      verify(dtMock).clearKey(samsNoteId.toHexString());
+    }
 }
