@@ -35,7 +35,6 @@ import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.NotFoundResponse;
 import umm3601.UnprocessableResponse;
 
-import static umm3601.ISODateParser.parseISO;
 
 /**
  * Controller that manages requests for note data (for a specific owner).

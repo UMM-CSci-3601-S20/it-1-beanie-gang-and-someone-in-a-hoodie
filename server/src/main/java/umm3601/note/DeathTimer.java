@@ -17,7 +17,6 @@ import com.mongodb.client.MongoDatabase;
 
 import org.checkerframework.checker.units.qual.s;
 
-import static umm3601.ISODateParser.parseISO;
 
 @Singleton
 public class DeathTimer extends Timer {

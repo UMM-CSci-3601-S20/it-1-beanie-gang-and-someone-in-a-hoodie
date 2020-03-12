@@ -50,7 +50,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import umm3601.note.DeathTimer.*;
-import static umm3601.ISODateParser.parseISO;
 
 import java.util.Timer;
 import java.util.TimerTask;
