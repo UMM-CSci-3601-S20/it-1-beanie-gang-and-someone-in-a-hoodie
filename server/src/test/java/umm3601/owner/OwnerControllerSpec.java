@@ -192,7 +192,6 @@ public class OwnerControllerSpec{
     String result = ctx.resultString();
     String id = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
     assertNotEquals("", id);
-    System.out.println(id);
 
     assertEquals(1, db.getCollection("owners").countDocuments(eq("_id", new ObjectId(id))));
 
