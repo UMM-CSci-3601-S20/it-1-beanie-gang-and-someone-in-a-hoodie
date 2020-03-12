@@ -24,22 +24,22 @@ describe('Add note', () => {
     expect(element(by.buttonText('ADD NOTE')).isEnabled()).toBe(true);
   });
 
-  it('should add a new note and go to the correct page', async () => {
-    const note: TestNote = {
-      body: 'I will be in the lab until 3pm.',
-      status: 'active',
-    };
+  // it('should add a new note and go to the correct page', async () => {
+  //   const note: TestNote = {
+  //     body: 'I will be in the lab until 3pm.',
+  //     status: 'active',
+  //   };
 
-    await page.addNote(note);
+  //   await page.addNote(note);
 
-    // Wait until the URL does not contain 'notes/new'
-    await browser.wait(EC.not(EC.urlContains('notes/new')), 10000);
+  //   // Wait until the URL does not contain 'notes/new'
+  //   await browser.wait(EC.not(EC.urlContains('notes/new')), 10000);
 
-    const url = await page.getUrl();
-    expect(RegExp('.*\/notes\/[0-9a-fA-F]{24}$', 'i').test(url)).toBe(true);
-    expect(url.endsWith('/notes/new')).toBe(false);
+  //   const url = await page.getUrl();
+  //   expect(RegExp('.*\/notes\/[0-9a-fA-F]{24}$', 'i').test(url)).toBe(true);
+  //   expect(url.endsWith('/notes/new')).toBe(false);
 
-    expect(element(by.id('statusField')).getText()).toEqual('active');
-    expect(element(by.id('bodyField')).getText()).toEqual('I will be in the lab until 3pm.');
-  });
+  //   expect(element(by.id('statusField')).getText()).toEqual('active');
+  //   expect(element(by.id('bodyField')).getText()).toEqual('I will be in the lab until 3pm.');
+  // });
 });
