@@ -64,10 +64,10 @@ describe('Owner list', () => {
 
     await page.clickViewOwner();
 
-    // Wait until the URL contains 'users/' (note the ending slash)
+    // Wait until the URL contains 'owners/' (note the ending slash)
     await browser.wait(EC.urlContains('owners/'), 10000);
 
-    // When the view profile button on the first user card is clicked, the URL should have a valid mongo ID
+    // When the view profile button on the first owner card is clicked, the URL should have a valid mongo ID
     const url = await page.getUrl();
     expect(RegExp('.*\/owners\/[0-9a-fA-F]{24}$', 'i').test(url)).toBe(true);
   });
@@ -75,10 +75,10 @@ describe('Owner list', () => {
   it('Should click add owner and go to the right URL', async () => {
     await page.clickAddOwnerFAB();
 
-    // Wait until the URL contains 'users/new'
+    // Wait until the URL contains 'owners/new'
     await browser.wait(EC.urlContains('owners/new'), 10000);
 
-    // When the view profile button on the first user card is clicked, we should be sent to the right URL
+    // Make sure that 'owners/new' is specifically the end of the url
     const url = await page.getUrl();
     expect(url.endsWith('/owners/new')).toBe(true);
 

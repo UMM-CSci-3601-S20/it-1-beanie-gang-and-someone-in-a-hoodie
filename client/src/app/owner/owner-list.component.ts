@@ -54,7 +54,7 @@ export class OwnerListComponent implements OnInit, OnDestroy  {
   }
 
   /**
-   * Starts an asynchronous operation to update the users list
+   * Starts an asynchronous operation to update the owners list
    *
    */
   ngOnInit(): void {
