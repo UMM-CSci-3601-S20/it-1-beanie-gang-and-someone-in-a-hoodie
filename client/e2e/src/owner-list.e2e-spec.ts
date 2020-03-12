@@ -11,7 +11,7 @@ describe('Owner list', () => {
   });
 
   it('Should have the correct title', () => {
-    expect(page.getOwnerTitle()).toEqual('Owner');
+    expect(page.getOwnerTitle()).toEqual('Owners');
   });
 
   it('Should type something in the name filter and check that it returned correct elements', async () => {
@@ -59,9 +59,10 @@ describe('Owner list', () => {
 
 
   it('Should click on a owner and go to the correct URL', async () => {
-    const firstOwnerName = await page.getOwnerListItems().first().element(by.className('owner-list-name')).getText();
-    const firstOwnerbuilding = await page.getOwnerListItems().first().element(by.className('owner-list-building')).getText();
-    await page.clickViewOwner(page.getOwnerListItems().first());
+    const ownerOneName = await page.getOwnerListItems().map(e => e.element(by.className('owner-list-name')).getText());
+    const ownerOneBuilding = await page.getOwnerListItems().map(e => e.element(by.className('owner-list-building')).getText());
+
+    await page.clickViewOwner();
 
     // Wait until the URL contains 'users/' (note the ending slash)
     await browser.wait(EC.urlContains('owners/'), 10000);
@@ -82,7 +83,7 @@ describe('Owner list', () => {
     expect(url.endsWith('/owners/new')).toBe(true);
 
     // On this profile page we were sent to, We should see the right title
-    expect(element(by.className('add-Owner-title')).getText()).toEqual('New Owner');
+    expect(element(by.className('add-owner-title')).getText()).toEqual('New Owner');
   });
 
 });

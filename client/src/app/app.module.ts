@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
-import {MatButtonModule} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,9 +20,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatRadioModule} from '@angular/material/radio';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 // Home
 import { HomeComponent } from './home/home.component';
@@ -31,7 +31,6 @@ import { HomeComponent } from './home/home.component';
 import { OwnerListComponent } from './owner/owner-list.component';
 import { OwnerService } from './owner/owner.service';
 import { AddOwnerComponent } from './owner/add-owner.component';
-import { OwnerNoticesComponent } from './owner/owner-notices.component';
 import { OwnerPageComponent } from './owner/owner-page.component';
 
 // Note
@@ -42,6 +41,7 @@ import { AddNoteComponent } from './notes/add-note.component';
 // Other
 import { HttpClientModule } from '@angular/common/http';
 import { LayoutModule } from '@angular/cdk/layout';
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 const MATERIAL_MODULES: any[] = [
   MatListModule,
@@ -68,7 +68,6 @@ const MATERIAL_MODULES: any[] = [
     HomeComponent,
     OwnerListComponent,
     AddOwnerComponent,
-    OwnerNoticesComponent,
     OwnerPageComponent,
     EditNoteComponent,
     AddNoteComponent,
@@ -83,6 +82,8 @@ const MATERIAL_MODULES: any[] = [
     HttpClientModule,
     MATERIAL_MODULES,
     LayoutModule,
+    OwlDateTimeModule,
+    OwlNativeDateTimeModule,
   ],
   providers: [
     OwnerService,

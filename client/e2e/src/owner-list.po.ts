@@ -31,8 +31,8 @@ export class OwnerPage {
     return element(by.className('owner-nav-list')).all(by.className('owner-list-item'));
   }
 
-  clickViewOwner(card: ElementFinder) {
-    return card.element(by.className("owner-nav-list")).click();
+  clickViewOwner() {
+    return element(by.className('owner-list-item')).click();
   }
 
   clickAddOwnerFAB() {

@@ -34,10 +34,6 @@ export class AddNoteComponent implements OnInit {
       {type: 'maxLength', message: 'Cannot exceed 1000 characters'}
     ],
 
-    expireDate: [
-      { type: 'required', message: 'Role is required' },
-      { type: 'pattern', message: 'Most be formatted correctly' }, // up for change I have no idea how this works
-    ]
   };
 
 
@@ -56,9 +52,6 @@ export class AddNoteComponent implements OnInit {
         Validators.maxLength(1000),
       ])),
 
-      //expireDate: new FormControl()
-
-
     });
 
   }
@@ -72,9 +65,6 @@ export class AddNoteComponent implements OnInit {
     const noteToAdd: Note = this.addNoteForm.value;
     noteToAdd.ownerID = this.owner_id; // get owner ID from somewhere, put here
     noteToAdd.addDate = new Date().toISOString();
-    noteToAdd.expireDate = new Date('2025-03-06T22:03:38+0000').toISOString();
-    console.log('Before open ' + noteToAdd.addDate + ' ' + noteToAdd.expireDate);
-    console.log(this.owner_id);
     this.noteService.addNewNote(noteToAdd).subscribe(newID => {
 
       this.snackBar.open('Added Note ', null, {

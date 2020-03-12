@@ -50,6 +50,5 @@ describe('Add owner', () => {
     expect(element(by.id('officeNumberField')).getText()).toEqual('Office Number: ' + owner.officeNumber);
     expect(element(by.id('emailField')).getText()).toEqual('E-mail: ' + owner.email);
   });
-
 });
 

@@ -12,13 +12,18 @@ export class AddNotePage {
   }
 
   getUrl() {
-    const title = element(by.className('add-note-title'));
+    return browser.getCurrentUrl();
+  }
+
+  getTitle() {
+    const title = element(by.className('add-note-title')).getText();
+    return title;
   }
 
   async typeInput(inputId: string, text: string) {
     const input = element(by.id(inputId));
     await input.click();
-    await input.sendKeys();
+    await input.sendKeys(text);
   }
 
   selectMatSelectValue(selectID: string, value: string) {
@@ -29,7 +34,7 @@ export class AddNotePage {
   }
 
   clickAddNote() {
-    return element(by.buttonText('ADD NOTE'));
+    return element(by.buttonText('ADD NOTE')).click();
   }
 
   async addNote(newNote: TestNote) {
