@@ -9,12 +9,12 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 import io.javalin.Javalin;
-
-import umm3601.user.UserController;
+import umm3601.owner.OwnerController;
+import umm3601.note.NoteController;
 
 public class Server {
 
-  static String appName = "CSCI 3601 Iteration Template";
+  static String appName = "DoorBoard";
 
   private static MongoDatabase database;
 
@@ -23,7 +23,7 @@ public class Server {
     // Get the MongoDB address and database name from environment variables and
     // if they aren't set, use the defaults of "localhost" and "dev".
     String mongoAddr = System.getenv().getOrDefault("MONGO_ADDR", "localhost");
-    String databaseName = System.getenv().getOrDefault("MONGO_DB", "dev");
+    String databaseName = System.getenv().getOrDefault("MONGO_DB", "team4IterationDev");
 
     // Setup the MongoDB client object with the information we set earlier
     MongoClient mongoClient = MongoClients.create(
@@ -36,8 +36,8 @@ public class Server {
     database = mongoClient.getDatabase(databaseName);
 
     // Initialize dependencies
-    UserController userController = new UserController(database);
-    //UserRequestHandler userRequestHandler = new UserRequestHandler(userController);
+    OwnerController ownerController = new OwnerController(database);
+    NoteController noteController = new NoteController(database);
 
     Javalin server = Javalin.create().start(4567);
 
@@ -47,18 +47,33 @@ public class Server {
     // Utility routes
     server.get("api", ctx -> ctx.result(appName));
 
-    // Get specific user
-    server.get("api/users/:id", userController::getUser);
+    // ----- Owner routes ----- //
+    // Get specific owner
+    server.get("api/owners/:id", ownerController::getOwner);
 
-    server.delete("api/users/:id", userController::deleteUser);
+    // Delete specific owner
+   // server.delete("api/owners/:id", ownerController::deleteOwner);
 
-    // List users, filtered using query parameters
-    server.get("api/users", userController::getUsers);
+    // List owners, filtered using query parameters
+    server.get("api/owners", ownerController::getOwners);
 
-    // Add new user
-    server.post("api/users/new", userController::addNewUser);
+    // Add new owner
+    server.post("api/owners/new", ownerController::addNewOwner);
 
 
+    // ----- Note routes ----- //
+    // Get specific note
+    server.get("api/notes/:id", noteController::getNoteById);
+
+    // Delete specific note
+    server.delete("api/notes/:id", noteController::deleteNote);
+
+    // List notes, filtered using query parameters
+    server.get("api/notes", noteController::getNotesByOwner);
+
+    // Add new note
+
+    server.post("api/notes/new", noteController::addNewNote);
 
     server.exception(Exception.class, (e, ctx) -> {
       ctx.status(500);

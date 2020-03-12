@@ -1,0 +1,5 @@
+The following regex will convert standard json into MongoDB format.
+Find: (?:^|\W)"\$oid": "([a-z0-9]*?)",(?:$|\W)
+Replace: "_id": {
+      "$oid": "$1"
+    },

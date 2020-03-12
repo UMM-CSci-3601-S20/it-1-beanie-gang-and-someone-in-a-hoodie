@@ -1,0 +1,40 @@
+<!-- example from
+https://github.com/AngularTemplates/angular-forms-and-validations/blob/master/src/app/form-component/form.component.html
+is potentially helpful and contributed to the shaping of this example -->
+<form [formGroup]="addNoteForm" (ngSubmit)="submitForm();">
+    <mat-card class="add-note-card">
+        <mat-card-header>
+          <mat-card-title class="add-note-title">New Note</mat-card-title>
+        </mat-card-header>
+        <mat-card-content fxLayout="column">
+          <mat-form-field>
+            <mat-label>Status</mat-label>
+            <mat-select id="statusField" required formControlName="status">
+              <mat-option value="active">Active</mat-option>
+              <mat-option value="draft">Draft</mat-option>
+              <mat-option value="template">Template</mat-option>
+            </mat-select>
+            <mat-error *ngIf="addNoteForm.get('status').hasError('required')">You must make a selection</mat-error>
+            <mat-error *ngIf="addNoteForm.get('status').hasError('pattern') && !addNoteForm.get('status').hasError('required')">
+              Your selection is invalid
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Body</mat-label>
+            <input matInput #input id="bodyField" placeholder="Body"
+                  formControlName="body" required>
+
+          </mat-form-field>
+
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-button id="confirmAddNoteButton" type="button" color="primary"
+                  [disabled]="!addNoteForm.valid" type="submit">
+                  ADD NOTE
+          </button>
+        </mat-card-actions>
+    </mat-card>
+</form>
+
+

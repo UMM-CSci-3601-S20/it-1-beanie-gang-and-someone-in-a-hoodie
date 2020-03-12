@@ -13,21 +13,21 @@ export class MockOwnerService extends OwnerService {
       _id: 'chris_id',
       name: 'Chris',
       building: 'Science Hall',
-      email: 'chris@this.that',
+      email: 'robi1467@morris.umn.edu',
       officeNumber: '1001'
     },
     {
       _id: 'richard_id',
       name: 'Richard Mars',
       building: 'HFA',
-      email: 'mars@this.that',
+      email: 'robi1467@morris.umn.edu',
       officeNumber: '2022'
     },
     {
       _id: 'jamie_id',
       name: 'Jamie',
       building: 'Humanities',
-      email: 'totallyrealemail@this.that',
+      email: 'robi1467@morris.umn.edu',
       officeNumber: '111'
     }
   ];
@@ -41,7 +41,9 @@ export class MockOwnerService extends OwnerService {
   }
 
   getOwnerById(id: string): Observable<Owner> {
-
+    // If the specified ID is for the first test user,
+    // return that user, otherwise return `null` so
+    // we can test illegal user requests.
     if (id === MockOwnerService.testOwners[0]._id) {
       return of(MockOwnerService.testOwners[0]);
     } else {

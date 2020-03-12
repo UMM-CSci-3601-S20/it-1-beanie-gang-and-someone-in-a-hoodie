@@ -80,7 +80,7 @@ export class AddOwnerComponent implements OnInit {
         Validators.required,
         Validators.minLength(1),
         Validators.maxLength(50),
-        Validators.pattern('^[\\w\\s]+$'),
+        Validators.pattern('^[\\w\\s]+$')
       ])),
 
     });
