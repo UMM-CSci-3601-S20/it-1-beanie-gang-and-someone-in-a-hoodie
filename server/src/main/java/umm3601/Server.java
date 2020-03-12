@@ -12,11 +12,10 @@ import io.javalin.Javalin;
 import umm3601.owner.OwnerController;
 import umm3601.note.DeathTimer;
 import umm3601.note.NoteController;
-import umm3601.user.UserController;
 
 public class Server {
 
-  static String appName = "CSCI 3601 Iteration Template";
+  static String appName = "DoorBoard";
 
   private static MongoDatabase database;
 
@@ -38,10 +37,8 @@ public class Server {
     database = mongoClient.getDatabase(databaseName);
 
     // Initialize dependencies
-    UserController userController = new UserController(database);
     OwnerController ownerController = new OwnerController(database);
     NoteController noteController = new NoteController(database, DeathTimer.getDeathTimerInstance());
-    //UserRequestHandler userRequestHandler = new UserRequestHandler(userController);
 
     Javalin server = Javalin.create().start(4567);
 
@@ -51,24 +48,12 @@ public class Server {
     // Utility routes
     server.get("api", ctx -> ctx.result(appName));
 
-    // Get specific user
-    server.get("api/users/:id", userController::getUser);
-
-    server.delete("api/users/:id", userController::deleteUser);
-
-    // List users, filtered using query parameters
-    server.get("api/users", userController::getUsers);
-
-    // Add new user
-    server.post("api/users/new", userController::addNewUser);
-
-
     // ----- Owner routes ----- //
     // Get specific owner
     server.get("api/owners/:id", ownerController::getOwner);
 
     // Delete specific owner
-    server.delete("api/owners/:id", ownerController::deleteOwner);
+   // server.delete("api/owners/:id", ownerController::deleteOwner);
 
     // List owners, filtered using query parameters
     server.get("api/owners", ownerController::getOwners);
@@ -88,6 +73,7 @@ public class Server {
     server.get("api/notes", noteController::getNotesByOwner);
 
     // Add new note
+
     server.post("api/notes/new", noteController::addNewNote);
 
     // Update a note

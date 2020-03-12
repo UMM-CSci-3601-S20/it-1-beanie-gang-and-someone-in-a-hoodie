@@ -27,26 +27,16 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 // Home
 import { HomeComponent } from './home/home.component';
 
-// User
-import { UserListComponent } from './users/user-list.component';
-import { UserService } from './users/user.service';
-import { UserProfileComponent } from './users/user-profile.component';
-import { AddUserComponent } from './users/add-user.component';
-import { UserCardComponent } from './users/user-card.component';
-
-
 // Owner
 import { OwnerListComponent } from './owner/owner-list.component';
 import { OwnerService } from './owner/owner.service';
 import { AddOwnerComponent } from './owner/add-owner.component';
-import { OwnerNoticesComponent } from './owner/owner-notices.component';
 import { OwnerPageComponent } from './owner/owner-page.component';
 
 // Note
-import { NoteListComponent } from './notes/note-list.component';
 import { NoteService } from './notes/note.service';
 import { EditNoteComponent } from './notes/edit-note.component';
-import { NotePageComponent } from './notes/note-page.component';
+import { AddNoteComponent } from './notes/add-note.component';
 
 // Other
 import { HttpClientModule } from '@angular/common/http';
@@ -75,17 +65,11 @@ const MATERIAL_MODULES: any[] = [
   declarations: [
     AppComponent,
     HomeComponent,
-    UserListComponent,
-    UserCardComponent,
-    UserProfileComponent,
-    AddUserComponent,
     OwnerListComponent,
     AddOwnerComponent,
-    OwnerNoticesComponent,
     OwnerPageComponent,
-    NoteListComponent,
     EditNoteComponent,
-    NotePageComponent,
+    AddNoteComponent,
   ],
   imports: [
     BrowserModule,
@@ -99,7 +83,6 @@ const MATERIAL_MODULES: any[] = [
     LayoutModule,
   ],
   providers: [
-    UserService,
     OwnerService,
     NoteService,
   ],

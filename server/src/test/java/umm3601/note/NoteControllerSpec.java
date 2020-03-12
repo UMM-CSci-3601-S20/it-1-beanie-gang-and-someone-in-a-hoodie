@@ -157,6 +157,7 @@ public class NoteControllerSpec {
   }
 
   @Test
+
   public void addNote() throws IOException {
     ArgumentCaptor<Note> noteCaptor = ArgumentCaptor.forClass(Note.class);
     String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
@@ -363,6 +364,7 @@ public class NoteControllerSpec {
   public void AddNoteWithoutExpiration() throws IOException {
     String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
         + "\"addDate\": \"2020-03-07T22:03:38+0000\", " + "\"status\": \"active\" }";
+  
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");

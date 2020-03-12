@@ -11,24 +11,24 @@ describe('Note service: ', () => {
       _id: 'first_id',
       ownerID: 'test-id',
       body: 'This is the body of the first test id. It is somewhat long.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'active'
     },
     {
       _id: 'second_id',
       ownerID: 'test-id',
       body: 'This is the second test id.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'deleted'
     },
     {
       _id: 'third_id',
       ownerID: 'test-id',
       body: 'Third test id body.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'template'
     }
   ];

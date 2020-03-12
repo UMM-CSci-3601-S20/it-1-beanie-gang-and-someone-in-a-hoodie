@@ -60,10 +60,10 @@ export class NoteService {
 
     let filteredNotes = notes;
 
-    // Filter by addDate
-    if (filters.addDate) {
+   /* // Filter by addDate
+    if (filters.addDate.toISOString()) {
       filteredNotes = filteredNotes.filter(note => {
-        return note.addDate.toISOString().indexOf(filters.addDate.toISOString()) !== -1;
+        return note.addDate.indexOf(filters.addDate) !== -1;
       });
     }
     // Filter by expireDate
@@ -72,12 +72,13 @@ export class NoteService {
         return note.expireDate.toISOString().indexOf(filters.expireDate.toISOString()) !== -1;
       });
     }
-
+*/
     return filteredNotes;
   }
 
   addNewNote(newNote: Note): Observable<string> {
     // Send a post request to add a new note with the note data as the body.
+    const test = this.httpClient.post<{id: string}>(this.noteUrl + '/new', newNote).pipe(map(res => res.id));
     return this.httpClient.post<{id: string}>(this.noteUrl + '/new', newNote).pipe(map(res => res.id));
   }
 

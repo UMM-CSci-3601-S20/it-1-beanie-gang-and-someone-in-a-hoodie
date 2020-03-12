@@ -52,5 +52,4 @@ describe('Add user', () => {
     expect(element(by.className('user-card-age')).getText()).toEqual(user.age);
     expect(element(by.className('user-card-email')).getText()).toEqual(user.email);
   });
-
 });
