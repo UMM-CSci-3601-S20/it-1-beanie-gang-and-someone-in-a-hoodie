@@ -32,6 +32,7 @@
 
   <!-- set active to default-->
   <!---search Card???-->
+  <div fxFlex flFlex.gt-sm="40"  fxFlexOffset.gt-sm="10">
   <mat-card class="search-card">
       <mat-card-header>
         <mat-card-title class="note-list-title">Notes</mat-card-title>
@@ -41,7 +42,6 @@
           <mat-form-field class="input-field">
             <mat-label>Status</mat-label>
             <mat-select (selectionChange)="getNotesFromServer()" [(ngModel)]="noteStatus" id="note-status-select">
-              <mat-option>--</mat-option>
               <mat-option value="active">Active</mat-option>
               <mat-option value="template">Template</mat-option>
               <mat-option value="draft">Draft</mat-option>
@@ -52,18 +52,16 @@
         </div>
       </mat-card-content>
   </mat-card>
+  </div>
 </div>
 
 <div fxLayout="row">
   <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10" *ngIf="serverFilteredNotes" >
-    <!-- Switch between card and list view based on the viewType variable, set above in the mar-radio-group -->
-
-      <!-- List view -->
       <mat-card class="'list'">
         <mat-card-content>
           <mat-list class="note-nav-list">
             <h3 mat-subheader>Notes</h3>
-            <mat-list-item *ngFor="let note of this.filteredNotes" [routerLink]="['/notes', note._id]" class="note-list-item">
+            <mat-list-item *ngFor="let note of this.filteredNotes" class="note-list-item">
               <h3 matLine class="note-list-status"> {{note.status}} </h3>
               <p matLine class="note-list-body"> {{note.body}} </p>
               <p matLine class="note-list-expiration-date">{{note.expireDate}}</p>

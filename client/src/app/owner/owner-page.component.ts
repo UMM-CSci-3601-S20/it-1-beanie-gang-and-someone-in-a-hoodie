@@ -34,7 +34,7 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   getNotesSub: Subscription;
   getOwnerSub: Subscription;
 
-  public noteStatus: NoteStatus;
+  public noteStatus: NoteStatus = 'active';
   public noteAddDate: Date;
   public noteExpireDate: Date;
   public noteBody: string;
@@ -72,6 +72,7 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   public returnSafeLink(): SafeResourceUrl{
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.GcalURL);  // Return a "safe" link to gCalendar
   }
+
   public getName(): string {
     return this.owner.name;
   }
@@ -93,6 +94,7 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
         this.getNotesSub.unsubscribe();
       }
       this.getNotesSub = this.noteService.getNotesByOwner(this.id).subscribe( notes => this.notes = notes);
+      this.getNotesFromServer();
       if (this.getOwnerSub) {
         this.getOwnerSub.unsubscribe();
       }
