@@ -42,7 +42,7 @@ import umm3601.UnprocessableResponse;
 public class NoteController {
 
 
-  @Inject private static DeathTimer deathTimer;
+  private static DeathTimer deathTimer;
 
   JacksonCodecRegistry jacksonCodecRegistry = JacksonCodecRegistry.withDefaultObjectMapper();
 
@@ -52,11 +52,12 @@ public class NoteController {
    * @param database the database containing the note data
    */
 
-  public NoteController(MongoDatabase database) {
+  @Inject
+  public NoteController(MongoDatabase database, DeathTimer dt) {
     jacksonCodecRegistry.addCodecForClass(Note.class);
     noteCollection = database.getCollection("notes").withDocumentClass(Note.class)
         .withCodecRegistry(jacksonCodecRegistry);
-        deathTimer = DeathTimer.getDeathTimerInstance();
+        deathTimer = dt;
   }
 
   /**
@@ -112,6 +113,7 @@ public class NoteController {
       throw new ForbiddenResponse("The requested note does not belong to this owner. It cannot be deleted.");
     } else {
       noteCollection.deleteOne(eq("_id", new ObjectId(id)));
+      deathTimer.clearKey(id);
     }
   }
 
@@ -162,8 +164,11 @@ public class NoteController {
         throw new ConflictResponse("Expiration dates can only be assigned to active notices.");
       }
 
+      if(newNote.expireDate != null || newNote.status.equals("deleted")) {
+        deathTimer.updateTimerStatus(newNote); //only make a timer if needed
+      }
       noteCollection.insertOne(newNote);
-      deathTimer.updateTimerStatus(newNote);
+
       ctx.status(201);
       ctx.json(ImmutableMap.of("id", newNote._id));
   }
@@ -256,10 +261,10 @@ public class NoteController {
         toReturn.append("$set", toEdit);
       }
       noteCollection.updateOne(eq("_id", new ObjectId(id)), toReturn);
-      if(toEdit.containsKey("status") || toEdit.containsKey("expireDate")
-      || toReturn.containsKey("$unset")) {
-        deathTimer.updateTimerStatus(noteCollection.find(eq("_id", new ObjectId(id))).first());
-      }
+
+      deathTimer.updateTimerStatus(noteCollection.find(eq("_id", new ObjectId(id))).first());
+
+      //we're getting the note, we can(should) send it back with a 201 instead of just a 204
       ctx.status(204);
     }
 
@@ -275,6 +280,7 @@ public class NoteController {
      */
     protected void singleDelete(String id) {
       noteCollection.deleteOne(eq("_id", new ObjectId(id)));
+      deathTimer.clearKey(id);
     }
 
 

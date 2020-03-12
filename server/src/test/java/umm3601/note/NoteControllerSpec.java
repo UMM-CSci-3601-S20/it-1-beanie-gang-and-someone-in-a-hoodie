@@ -6,18 +6,27 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.security.acl.Owner;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimerTask;
 
 import javax.inject.Inject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.google.common.collect.ImmutableMap;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -36,6 +45,14 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ConflictResponse;
@@ -45,20 +62,25 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.http.util.ContextUtil;
 import io.javalin.plugin.json.JavalinJson;
 import umm3601.UnprocessableResponse;
+import umm3601.note.DeathTimer.ExpireTask;
 
 public class NoteControllerSpec {
 
   MockHttpServletRequest mockReq = new MockHttpServletRequest();
   MockHttpServletResponse mockRes = new MockHttpServletResponse();
 
-  private NoteController noteController;
 
-  @Inject DeathTimer deathTimer;
+
+  @Mock(name="dt") DeathTimer dtMock;
 
   private ObjectId samsNoteId;
 
   static MongoClient mongoClient;
-  static MongoDatabase db;
+  @Spy static MongoDatabase db;
+  //I'll be honest this is some real bullshit to make myself able to inject dtMock.
+
+  @InjectMocks NoteController noteController;
+
 
   static ObjectMapper jsonMapper = new ObjectMapper();
 
@@ -73,9 +95,11 @@ public class NoteControllerSpec {
 
   @BeforeEach
   public void setupEach() throws IOException {
-    // Reset our mock request and response objects
+    MockitoAnnotations.initMocks(this);
+    // Reset our mock objects
     mockReq.resetAll();
     mockRes.resetAll();
+    when(dtMock.updateTimerStatus(any(Note.class))).thenReturn(true);
 
     MongoCollection<Document> noteDocuments = db.getCollection("notes");
     noteDocuments.drop();
@@ -104,7 +128,7 @@ public class NoteControllerSpec {
     noteDocuments.insertMany(testNotes);
     noteDocuments.insertOne(Document.parse(sam.toJson()));
 
-    noteController = new NoteController(db);
+    noteController = new NoteController(db, dtMock);
   }
 
   @AfterAll
@@ -134,6 +158,7 @@ public class NoteControllerSpec {
 
   @Test
   public void addNote() throws IOException {
+    ArgumentCaptor<Note> noteCaptor = ArgumentCaptor.forClass(Note.class);
     String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
         + "\"addDate\": \"2020-03-07T22:03:38+0000\", " + "\"expireDate\": \"2021-03-07T22:03:38+0000\", "
         + "\"status\": \"active\" }";
@@ -161,7 +186,18 @@ public class NoteControllerSpec {
     assertEquals("2020-03-07T22:03:38+0000", addedNote.getString("addDate"));
     assertEquals("2021-03-07T22:03:38+0000", addedNote.getString("expireDate"));
     assertEquals("active", addedNote.getString("status"));
-  }
+
+    verify(dtMock).updateTimerStatus(noteCaptor.capture());
+    Note newNote = noteCaptor.getValue();
+    assertEquals(id, newNote._id);
+    assertEquals("e7fd674c72b76596c75d9f1e", newNote.ownerID);
+    assertEquals("Test Body", newNote.body);
+    assertEquals("2020-03-07T22:03:38+0000", newNote.addDate);
+    assertEquals("2021-03-07T22:03:38+0000", newNote.expireDate);
+    assertEquals("active", newNote.status);
+    }
+
+
 
   @Test
   public void editSingleField() throws IOException {
@@ -194,10 +230,13 @@ public class NoteControllerSpec {
     assertEquals("2020-03-07T22:03:38+0000", editedNote.getString("addDate"));
     assertEquals("2100-03-07T22:03:38+0000", editedNote.getString("expireDate"));
     // all other fields should be untouched
+
+    verify(dtMock).updateTimerStatus(any(Note.class));
   }
 
   @Test
   public void editMultipleFields() throws IOException {
+    ArgumentCaptor<Note> noteCaptor = ArgumentCaptor.forClass(Note.class);
     String reqBody = "{\"body\": \"I am still sam\", \"expireDate\": \"2025-03-07T22:03:38+0000\"}";
     mockReq.setBodyContent(reqBody);
     mockReq.setMethod("PATCH");
@@ -218,6 +257,18 @@ public class NoteControllerSpec {
     assertEquals("active", editedNote.getString("status"));
     assertEquals("owner3_ID", editedNote.getString("ownerID"));
     assertEquals("2020-03-07T22:03:38+0000", editedNote.getString("addDate"));
+
+    // Since the expireDate was changed, the timer's status should have been updated
+    verify(dtMock).updateTimerStatus(noteCaptor.capture());
+    Note updatedNote = noteCaptor.getValue();
+    assertEquals(samsNoteId.toHexString(), updatedNote._id);
+    assertEquals("I am still sam", updatedNote.body);
+    assertEquals("2025-03-07T22:03:38+0000", updatedNote.expireDate);
+    assertEquals("active", updatedNote.status);
+    assertEquals("owner3_ID", updatedNote.ownerID);
+    assertEquals("2020-03-07T22:03:38+0000", updatedNote.addDate);
+
+
   }
 
   @Test
@@ -336,10 +387,12 @@ public class NoteControllerSpec {
     assertEquals("2020-03-07T22:03:38+0000", addedNote.getString("addDate"));
     assertNull(addedNote.getString("expireDate"));
     assertEquals("active", addedNote.getString("status"));
+    verify(dtMock, never()).updateTimerStatus(any(Note.class));
   }
 
   @Test
   public void RemoveExpirationFromNote() throws IOException {
+    ArgumentCaptor<Note> noteCaptor = ArgumentCaptor.forClass(Note.class);
     mockReq.setBodyContent("{\"expireDate\": null}");
     mockReq.setMethod("PATCH");
 
@@ -360,6 +413,13 @@ public class NoteControllerSpec {
     assertEquals("I am sam", editedNote.getString("body"));
     assertEquals("owner3_ID", editedNote.getString("ownerID"));
     assertEquals("2020-03-07T22:03:38+0000", editedNote.getString("addDate"));
+
+    verify(dtMock).updateTimerStatus(noteCaptor.capture());
+    Note updatedNote = noteCaptor.getValue();
+    assertEquals("active", updatedNote.status);
+    assertEquals("I am sam", updatedNote.body);
+    assertEquals("owner3_ID", updatedNote.ownerID);
+    assertEquals("2020-03-07T22:03:38+0000", updatedNote.addDate);
   }
 
   @Test
@@ -367,6 +427,8 @@ public class NoteControllerSpec {
     // This is... a little ugly. And relies on something else working. But there
     // isn't a great way of knowing
     // the ID of another notice without an expiration date.
+
+    ArgumentCaptor<Note> noteCaptor = ArgumentCaptor.forClass(Note.class);
 
     String testNewNote = "{ " + "\"ownerID\": \"e7fd674c72b76596c75d9f1e\", " + "\"body\": \"Test Body\", "
         + "\"addDate\": \"2020-03-07T22:03:38+0000\", " + "\"status\": \"active\" }";
@@ -395,6 +457,17 @@ public class NoteControllerSpec {
     assertEquals("2020-03-07T22:03:38+0000", addedNote.getString("addDate"));
     assertEquals("2021-03-07T22:03:38+0000", addedNote.getString("expireDate"));
     assertEquals("active", addedNote.getString("status"));
+
+    verify(dtMock).updateTimerStatus(noteCaptor.capture());
+    Note editedNote = noteCaptor.getValue();
+    assertEquals(id, editedNote._id);
+    assertEquals("e7fd674c72b76596c75d9f1e", editedNote.ownerID);
+    assertEquals("Test Body", editedNote.body);
+    assertEquals("2020-03-07T22:03:38+0000", editedNote.addDate);
+    assertEquals("2021-03-07T22:03:38+0000", editedNote.expireDate);
+    assertEquals("active", editedNote.status);
+
+
   }
 
   @Test
@@ -419,6 +492,8 @@ public class NoteControllerSpec {
     assertEquals("I am sam", editedNote.getString("body"));
     assertEquals("owner3_ID", editedNote.getString("ownerID"));
     assertEquals("2020-03-07T22:03:38+0000", editedNote.getString("addDate"));
+
+    verify(dtMock).updateTimerStatus(any(Note.class));
 
   }
 

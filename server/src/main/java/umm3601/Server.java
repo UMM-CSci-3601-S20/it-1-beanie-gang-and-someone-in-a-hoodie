@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 
 import io.javalin.Javalin;
 import umm3601.owner.OwnerController;
+import umm3601.note.DeathTimer;
 import umm3601.note.NoteController;
 import umm3601.user.UserController;
 
@@ -39,7 +40,7 @@ public class Server {
     // Initialize dependencies
     UserController userController = new UserController(database);
     OwnerController ownerController = new OwnerController(database);
-    NoteController noteController = new NoteController(database);
+    NoteController noteController = new NoteController(database, DeathTimer.getDeathTimerInstance());
     //UserRequestHandler userRequestHandler = new UserRequestHandler(userController);
 
     Javalin server = Javalin.create().start(4567);

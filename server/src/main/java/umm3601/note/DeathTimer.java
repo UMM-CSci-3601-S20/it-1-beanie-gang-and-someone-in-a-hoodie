@@ -26,23 +26,20 @@ public class DeathTimer extends Timer {
   // In order to make it more obvious what to change, if the customer
   // wants deleted notes to 'linger' for a different length of time.
 
-  private DateFormat ISODateStringFormat = DateFormat.getDateInstance();
-
   private NoteController noteController;
 
   @Inject
   void NoteControllerSetup(MongoDatabase db) {
-    noteController = new NoteController(db);
+    noteController = new NoteController(db, this);
   }
 
   @Inject
   private static DeathTimer deathTimerInstance = new DeathTimer();
 
   protected DeathTimer() {
-    super(true);
-  } // Start as a daemon
-  // Made not private, with the idea that it'll be injected
-  // in actual usage.
+    super(true);  // Start as a daemon
+  }
+  // Made not private, with the idea that it'll be injected in actual usage.
 
   public static DeathTimer getDeathTimerInstance() {
     return deathTimerInstance;
@@ -52,14 +49,6 @@ public class DeathTimer extends Timer {
   protected HashMap<String, TimerTask> pendingDeletion = new HashMap<String, TimerTask>();
 
   DateFormat df = new StdDateFormat();
-
-  // In theory, this should be the only function needed in order to work.
-  // It takes a note, then checks its status. If it's not 'deleted', it kills
-  // its corresponding task in pendingDeletion, then checks its expireDate. If
-  // that exists, it makes a new TimerTask scheduled for then. SchedulePurge
-  // might still need to be on its own, but I guess... if it's deleted, simply
-  // schedule
-  // for 7 days?
 
   /**
    * Given a single note, correctly sets up timers for its expiration.
@@ -101,7 +90,7 @@ public class DeathTimer extends Timer {
     return output;
   }
 
-  private boolean clearKey(String s) {
+  public boolean clearKey(String s) {
     boolean output = false;
     if (pendingDeletion.containsKey(s)) {
       output = pendingDeletion.get(s).cancel();
