@@ -12,11 +12,11 @@ describe('Add owner', () => {
     page.navigateTo();
   });
 
-  it('Should have the correct title', () => {
+  it('should have the correct title', () => {
     expect(page.getTitle()).toEqual('New Owner');
   });
 
-  it('Should enable and disable the add owner button', async () => {
+  it('should enable and disable the add owner button', async () => {
     expect(element(by.buttonText('ADD OWNER')).isEnabled()).toBe(false);
     await page.typeInput('nameField', 'test');
     expect(element(by.buttonText('ADD OWNER')).isEnabled()).toBe(false);
@@ -28,7 +28,7 @@ describe('Add owner', () => {
     expect(element(by.buttonText('ADD OWNER')).isEnabled()).toBe(false);
   });
 
-  it('Should add a new owner and go to the correct page', async () => {
+  it('should add a new owner and go to the correct page', async () => {
     const owner: TestOwner = {
       name: E2EUtil.randomText(10),
       building: E2EUtil.randomText(15),
@@ -46,10 +46,10 @@ describe('Add owner', () => {
     expect(url.endsWith('/owners/new')).toBe(false);
 
     expect(element(by.id('nameField')).getText()).toEqual(owner.name);
-    expect(element(by.id('buildingField')).getText()).toEqual(owner.name);
-    expect(element(by.id('officeNumberField')).getText()).toEqual(owner.name);
-    expect(element(by.id('emailField')).getText()).toEqual(owner.name);
+    expect(element(by.id('buildingField')).getText()).toEqual(owner.building);
+    expect(element(by.id('officeNumberField')).getText()).toEqual(owner.officeNumber);
+    expect(element(by.id('emailField')).getText()).toEqual(owner.email);
   });
 
-})
+});
 

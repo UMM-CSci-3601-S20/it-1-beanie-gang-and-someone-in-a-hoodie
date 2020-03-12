@@ -14,7 +14,7 @@ import umm3601.note.NoteController;
 
 public class Server {
 
-  static String appName = "CSCI 3601 Iteration Template";
+  static String appName = "DoorBoard";
 
   private static MongoDatabase database;
 

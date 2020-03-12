@@ -17,7 +17,7 @@ export class AddOwnerPage {
   }
 
   getTitle() {
-    const title = element(by.className('add-owner-title'));
+    return element(by.className('add-owner-title')).getText();
   }
 
   async typeInput(inputId: string, text: string) {
