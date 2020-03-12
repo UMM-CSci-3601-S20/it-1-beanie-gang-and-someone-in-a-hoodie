@@ -10,6 +10,7 @@ import { NoteService } from '../notes/note.service';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpParameterCodec } from "@angular/common/http";
+import { async } from '@angular/core/testing';
 @Component({
   selector: 'app-owner-page-component',
   templateUrl: 'owner-page.component.html',
@@ -63,7 +64,8 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
 }
 
   public createGmailConnection(ownerEmail: string): void {
-    let gmailUrl = ownerEmail.replace("@", "%40"); // Convert owner e-mail to acceptable format for connection to gCalendar
+    let gmailUrl = ownerEmail.replace('@', '%40'); // Convert owner e-mail to acceptable format for connection to gCalendar
+    console.log('BEING CALLED');
     gmailUrl = 'https://calendar.google.com/calendar/embed?src=' + gmailUrl; // Connection string
     this.GcalURL = gmailUrl; // Set the global connection string
   }
@@ -87,20 +89,19 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
     // Subscribe owner's notes
     this.route.paramMap.subscribe((pmap) => {
       this.id = pmap.get('id');
+      if (this.getNotesSub){
+        this.getNotesSub.unsubscribe();
+      }
+      this.getNotesSub = this.noteService.getNotesByOwner(this.id).subscribe( notes => this.notes = notes);
       if (this.getOwnerSub) {
         this.getOwnerSub.unsubscribe();
       }
       this.getOwnerSub = this.ownerService.getOwnerById(this.id).subscribe( async (owner: Owner) => {
       this.owner = owner;
       this.createGmailConnection(this.owner.email);
-
-      if (this.getNotesSub) {
-        this.getNotesSub.unsubscribe();
-      }
     });
-    });
+  });
   }
-
 
 
   ngOnDestroy(): void {
