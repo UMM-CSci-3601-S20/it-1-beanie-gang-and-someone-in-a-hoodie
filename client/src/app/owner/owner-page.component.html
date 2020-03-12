@@ -1,5 +1,24 @@
 <div fxLayout="row">
-  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
+  <div fxFlex fxFlex.gt-sm="40" fxFlexOffset.gt-sm="10">
+    <mat-card class="owner-card">
+      <mat-card-header>
+        <mat-card-title class="owner-card-title">DoorBoard Profile</mat-card-title>
+      </mat-card-header>
+      <mat-card-content id=nameField>
+        Name: {{this.owner.name}}
+      </mat-card-content>
+      <mat-card-content id=buildingField>
+        Building: {{this.owner.building}}
+      </mat-card-content>
+      <mat-card-content id=officeNumberField>
+        Office Number: {{this.owner.officeNumber}}
+      </mat-card-content>
+      <mat-card-content id=emailField>
+        E-mail: {{this.owner.email}}
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div fxFlex fxFlex.gt-sm="40" fxFlexOffset.gt-sm="10">
     <!--google calendar and related-->
 
     <mat-card class="gcal-embed">

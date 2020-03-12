@@ -25,7 +25,7 @@ describe('Add owner', () => {
     await page.typeInput('officeNumberField', 'test');
     expect(element(by.buttonText('ADD OWNER')).isEnabled()).toBe(false);
     await page.typeInput('emailField', 'billydavis@gmail.com');
-    expect(element(by.buttonText('ADD OWNER')).isEnabled()).toBe(false);
+    expect(element(by.buttonText('ADD OWNER')).isEnabled()).toBe(true);
   });
 
   it('should add a new owner and go to the correct page', async () => {
@@ -45,10 +45,10 @@ describe('Add owner', () => {
     expect(RegExp('.*\/owners\/[0-9a-fA-F]{24}$', 'i').test(url)).toBe(true);
     expect(url.endsWith('/owners/new')).toBe(false);
 
-    expect(element(by.id('nameField')).getText()).toEqual(owner.name);
-    expect(element(by.id('buildingField')).getText()).toEqual(owner.building);
-    expect(element(by.id('officeNumberField')).getText()).toEqual(owner.officeNumber);
-    expect(element(by.id('emailField')).getText()).toEqual(owner.email);
+    expect(element(by.id('nameField')).getText()).toEqual('Name: ' + owner.name);
+    expect(element(by.id('buildingField')).getText()).toEqual('Building: ' + owner.building);
+    expect(element(by.id('officeNumberField')).getText()).toEqual('Office Number: ' + owner.officeNumber);
+    expect(element(by.id('emailField')).getText()).toEqual('E-mail: ' + owner.email);
   });
 
 });

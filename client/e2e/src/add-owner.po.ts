@@ -17,13 +17,14 @@ export class AddOwnerPage {
   }
 
   getTitle() {
-    return element(by.className('add-owner-title')).getText();
+    const title = element(by.className('add-owner-title')).getText();
+    return title;
   }
 
   async typeInput(inputId: string, text: string) {
     const input = element(by.id(inputId));
     await input.click();
-    await input.sendKeys();
+    await input.sendKeys(text);
   }
 
   selectMatSelectValue(selectID: string, value: string) {
@@ -34,7 +35,7 @@ export class AddOwnerPage {
   }
 
   clickAddOwner() {
-    return element(by.buttonText('ADD OWNER'));
+    return element(by.buttonText('ADD OWNER')).click();
   }
 
   async addOwner(newOwner: TestOwner) {
