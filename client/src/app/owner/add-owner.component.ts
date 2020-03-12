@@ -24,6 +24,7 @@ export class AddOwnerComponent implements OnInit {
   add_owner_validation_messages = {
     name: [
       {type: 'required', message: 'Name is required'},
+      {type: 'minlength', message: 'Name must be more than 1 character long'},
       {type: 'maxlength', message: 'Name cannot be more than 50 characters long'},
       {type: 'pattern', message: 'Name must contain only numbers and letters'},
     ],
@@ -59,6 +60,7 @@ export class AddOwnerComponent implements OnInit {
       // simply excluding lists of characters.
       name: new FormControl('', Validators.compose([
         Validators.required,
+        Validators.minLength(1),
         Validators.maxLength(50),
         Validators.pattern('^[\\w\\s]+$'),
       ])),
