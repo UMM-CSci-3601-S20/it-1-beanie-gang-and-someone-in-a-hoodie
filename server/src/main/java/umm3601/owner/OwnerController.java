@@ -4,12 +4,10 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.regex;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.client.MongoCollection;
@@ -53,7 +51,6 @@ public class OwnerController {
   public void getOwner(Context ctx) {
     String id = ctx.pathParam("id");
     Owner owner;
-    System.out.println("YOUR OWNER ID IS: " + id);
     try {
       owner = ownerCollection.find(eq("_id", new ObjectId(id))).first();
     } catch(IllegalArgumentException e) {
