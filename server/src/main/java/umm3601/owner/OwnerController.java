@@ -53,7 +53,7 @@ public class OwnerController {
   public void getOwner(Context ctx) {
     String id = ctx.pathParam("id");
     Owner owner;
-
+    System.out.println("YOUR OWNER ID IS: " + id);
     try {
       owner = ownerCollection.find(eq("_id", new ObjectId(id))).first();
     } catch(IllegalArgumentException e) {

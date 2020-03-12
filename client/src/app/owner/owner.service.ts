@@ -32,7 +32,10 @@ export class OwnerService {
     });
   }
   getOwnerById(id: string): Observable<Owner> {
-    return this.httpClient.get<Owner>(this.ownerUrl + '/' + id);
+    console.log('called: ' + id );
+    const owner = this.httpClient.get<Owner>(this.ownerUrl + '/' + id);
+    console.log(this.ownerUrl +'/' + id);
+    return owner;
   }
 
   filterOwners(owners: Owner[], filters: { name?: string, email?: string, building?: string, officeNumber?: string }): Owner[] {

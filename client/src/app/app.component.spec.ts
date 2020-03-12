@@ -33,9 +33,9 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'Beanie gang and someone in a hoodie iteration 1'`, () => {
+  it(`should have as title 'DoorBoard'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('Beanie gang and someone in a hoodie iteration 1');
+    expect(app.title).toEqual('DoorBoard');
   });
 });

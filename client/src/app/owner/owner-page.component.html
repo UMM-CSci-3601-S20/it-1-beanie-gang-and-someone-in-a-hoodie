@@ -1,12 +1,35 @@
 <div fxLayout="row">
-  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
+  <div fxFlex fxFlex.gt-sm="40" fxFlexOffset.gt-sm="10">
+    <mat-card class="owner-card" *ngIf="this.owner" >
+      <mat-card-header>
+        <mat-card-title class="owner-card-title">DoorBoard Profile</mat-card-title>
+      </mat-card-header>
+      <mat-card-content id=nameField>
+        Name: {{getName()}}
+      </mat-card-content>
+      <mat-card-content id=buildingField>
+        Building: {{getBuilding()}}
+      </mat-card-content>
+      <mat-card-content id=officeNumberField>
+        Office Number: {{getOfficeNumber()}}
+      </mat-card-content>
+      <mat-card-content id=emailField>
+        E-mail: {{getEmail()}}
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div fxFlex fxFlex.gt-sm="40" fxFlexOffset.gt-sm="10">
     <!--google calendar and related-->
 
     <mat-card class="gcal-embed">
+      <iframe [src]="returnSafeLink()" style="border: 0" width="800"style="border: 0" width="1000" height="750"
+      frameborder="0" scrolling="auto"></iframe>
 
     </mat-card>
 
   </div>
+
   <!-- set active to default-->
   <!---search Card???-->
   <mat-card class="search-card">
@@ -29,14 +52,6 @@
         </div>
       </mat-card-content>
   </mat-card>
-  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
-    <!-- list of displayed notes -->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title class="note-list-title">Current Notes:</mat-card-title>
-      </mat-card-header>
-    </mat-card>
-  </div>
 </div>
 
 <div fxLayout="row">
@@ -46,15 +61,22 @@
       <!-- List view -->
       <mat-card class="'list'">
         <mat-card-content>
-          <mat-nav-list class="note-nav-list">
+          <mat-list class="note-nav-list">
             <h3 mat-subheader>Notes</h3>
-            <a mat-list-item *ngFor="let note of this.filteredNotes" [routerLink]="['/notes', note._id]" class="note-list-item">
+            <mat-list-item *ngFor="let note of this.filteredNotes" [routerLink]="['/notes', note._id]" class="note-list-item">
               <h3 matLine class="note-list-status"> {{note.status}} </h3>
               <p matLine class="note-list-body"> {{note.body}} </p>
               <p matLine class="note-list-expiration-date">{{note.expireDate}}</p>
-            </a>
-          </mat-nav-list>
+            </mat-list-item>
+          </mat-list>
         </mat-card-content>
       </mat-card>
   </div>
+</div>
+<div fxLayout="row">
+  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
+    <app-add-note [owner_id]="this.id" class="add-note" fxFlex="1 1 280px">
+
+    </app-add-note>
+</div>
 </div>

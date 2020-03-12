@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
-import {MatButtonModule} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,37 +20,28 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatRadioModule} from '@angular/material/radio';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 // Home
 import { HomeComponent } from './home/home.component';
-
-// User
-import { UserListComponent } from './users/user-list.component';
-import { UserService } from './users/user.service';
-import { UserProfileComponent } from './users/user-profile.component';
-import { AddUserComponent } from './users/add-user.component';
-import { UserCardComponent } from './users/user-card.component';
-
 
 // Owner
 import { OwnerListComponent } from './owner/owner-list.component';
 import { OwnerService } from './owner/owner.service';
 import { AddOwnerComponent } from './owner/add-owner.component';
-import { OwnerNoticesComponent } from './owner/owner-notices.component';
 import { OwnerPageComponent } from './owner/owner-page.component';
 
 // Note
-import { NoteListComponent } from './notes/note-list.component';
 import { NoteService } from './notes/note.service';
 import { EditNoteComponent } from './notes/edit-note.component';
-import { NotePageComponent } from './notes/note-page.component';
+import { AddNoteComponent } from './notes/add-note.component';
 
 // Other
 import { HttpClientModule } from '@angular/common/http';
 import { LayoutModule } from '@angular/cdk/layout';
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 const MATERIAL_MODULES: any[] = [
   MatListModule,
@@ -75,17 +66,11 @@ const MATERIAL_MODULES: any[] = [
   declarations: [
     AppComponent,
     HomeComponent,
-    UserListComponent,
-    UserCardComponent,
-    UserProfileComponent,
-    AddUserComponent,
     OwnerListComponent,
     AddOwnerComponent,
-    OwnerNoticesComponent,
     OwnerPageComponent,
-    NoteListComponent,
     EditNoteComponent,
-    NotePageComponent,
+    AddNoteComponent,
   ],
   imports: [
     BrowserModule,
@@ -97,9 +82,10 @@ const MATERIAL_MODULES: any[] = [
     HttpClientModule,
     MATERIAL_MODULES,
     LayoutModule,
+    OwlDateTimeModule,
+    OwlNativeDateTimeModule,
   ],
   providers: [
-    UserService,
     OwnerService,
     NoteService,
   ],

@@ -10,64 +10,64 @@ export class MockNoteService extends NoteService {
       _id: 'first_id',
       ownerID: 'test-id',
       body: 'This is the body of the first test id. It is somewhat long.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'active'
     },
     {
       _id: 'second_id',
       ownerID: 'test-id',
       body: 'This is the second test id.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'active'
     },
     {
       _id: 'third_id',
       ownerID: 'test-id',
       body: 'Third test id body.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'template'
     },
     {
       _id: 'fourth_id',
       ownerID: 'test-id',
       body: 'This is the fourth test id.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'template'
     },
     {
       _id: 'fifth_id',
       ownerID: 'test-id',
       body: 'Fifth id test body.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'draft'
     },
     {
       _id: 'sixth_id',
       ownerID: 'test-id',
       body: 'Sixth id test body.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'draft'
     },
     {
       _id: 'seventh_id',
       ownerID: 'test-id',
       body: 'Fifth id test body.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'deleted'
     },
     {
       _id: 'eighth_id',
       ownerID: 'test-id',
       body: 'Eighth id test body.',
-      addDate: new Date(),
-      expireDate: new Date(),
+      addDate: new Date().toISOString(),
+      expireDate: '2025-03-06T22:03:38+0000',
       status: 'deleted'
     }
   ];
