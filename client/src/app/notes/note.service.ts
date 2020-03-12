@@ -83,6 +83,9 @@ export class NoteService {
   }
 
   // To implement
- // deleteNote()
-  //editNote()
+  // deleteNote()
+  // editNote()
+
+  // n.b. the server http redirection and serverside implementation of these features are complete.
+  // howere, deleteNote() is untested.
 }

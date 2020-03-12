@@ -247,8 +247,11 @@ public class NoteController {
             toEdit.append("expireDate", inputDoc.get("expireDate"));
           } else {
             throw new UnprocessableResponse("The 'expireDate' field must contain an ISO 8061 time string.");
-          } //This is not the right error to throw here.  It would probably make more sense to throw a
+          }
+          //This is not the right error to throw here.  It would probably make more sense to throw a
           // 400 or 415.  Possibly throw a 422 on attempts to set the expireDate in the past?
+
+          //This would most likely be done by checking StdDateFormat.parse(inputDoc.get("expireDate").toString()).isAfter(note.addDate)
 
         }
 
