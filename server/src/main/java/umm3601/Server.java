@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 
 import io.javalin.Javalin;
 import umm3601.owner.OwnerController;
+import umm3601.note.DeathTimer;
 import umm3601.note.NoteController;
 
 public class Server {
@@ -37,7 +38,7 @@ public class Server {
 
     // Initialize dependencies
     OwnerController ownerController = new OwnerController(database);
-    NoteController noteController = new NoteController(database);
+    NoteController noteController = new NoteController(database, DeathTimer.getDeathTimerInstance());
 
     Javalin server = Javalin.create().start(4567);
 
@@ -74,6 +75,9 @@ public class Server {
     // Add new note
 
     server.post("api/notes/new", noteController::addNewNote);
+
+    // Update a note
+    server.patch("api/notes/:id", noteController::editNote);
 
     server.exception(Exception.class, (e, ctx) -> {
       ctx.status(500);
