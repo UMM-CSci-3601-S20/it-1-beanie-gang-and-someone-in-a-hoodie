@@ -36,7 +36,6 @@
               <mat-option value="draft">Draft</mat-option>
               <mat-option value="deleted">Deleted</mat-option>
             </mat-select>
-            <mat-hint>Filtered on server</mat-hint>
           </mat-form-field>
         </div>
       </mat-card-content>
@@ -64,8 +63,8 @@
 
   <div fxFlex fxLayoutAlign="end center">
     <!--google calendar and related-->
-    <mat-card class="gcal-embed">
-      <iframe [src]="returnSafeLink()" style="border: 0" width="800" style="border: 0" height="750" frameborder="0"
+    <mat-card class="gcal-embed" *ngIf="this.owner">
+      <iframe [src]="this.GcalURL" style="border: 0" width="800" style="border: 0" height="750" frameborder="0"
         scrolling="auto"></iframe>
     </mat-card>
   </div>

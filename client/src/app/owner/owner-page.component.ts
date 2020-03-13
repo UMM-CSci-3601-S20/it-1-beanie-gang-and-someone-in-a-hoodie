@@ -26,7 +26,7 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
   public notes: Note[];
   public serverFilteredNotes: Note[];
   public filteredNotes: Note[];
-  public GcalURL: string;
+  public GcalURL: SafeResourceUrl;
 
   owner: Owner;
   id: string;
@@ -67,11 +67,12 @@ export class OwnerPageComponent implements OnInit, OnDestroy {
     let gmailUrl = ownerEmail.replace('@', '%40'); // Convert owner e-mail to acceptable format for connection to gCalendar
     console.log('BEING CALLED');
     gmailUrl = 'https://calendar.google.com/calendar/embed?src=' + gmailUrl; // Connection string
-    this.GcalURL = gmailUrl; // Set the global connection string
+    //this.GcalURL = gmailUrl; // Set the global connection string
+    this.GcalURL = this.sanitizer.bypassSecurityTrustResourceUrl(gmailUrl);
   }
-  public returnSafeLink(): SafeResourceUrl{
-    return this.sanitizer.bypassSecurityTrustResourceUrl(this.GcalURL);  // Return a "safe" link to gCalendar
-  }
+  // public returnSafeLink(): SafeResourceUrl{
+  //   return this.sanitizer.bypassSecurityTrustResourceUrl(this.GcalURL);  // Return a "safe" link to gCalendar
+  // }
 
   public getName(): string {
     return this.owner.name;
