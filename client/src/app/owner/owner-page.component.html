@@ -1,6 +1,7 @@
-<div fxLayout="row">
-  <div fxFlex fxFlex.gt-sm="40" fxFlexOffset.gt-sm="10">
-    <mat-card class="owner-card" *ngIf="this.owner" >
+<div fxLayout="row wrap">
+  <div fxFlex fxLayoutAlign.gt-sm="start start">
+    <!--owner card-->
+    <mat-card class="owner-card" *ngIf="this.owner">
       <mat-card-header>
         <mat-card-title class="owner-card-title">DoorBoard Profile</mat-card-title>
       </mat-card-header>
@@ -17,24 +18,12 @@
         E-mail: {{getEmail()}}
       </mat-card-content>
     </mat-card>
-  </div>
 
-  <div fxFlex fxFlex.gt-sm="40" fxFlexOffset.gt-sm="10">
-    <!--google calendar and related-->
-
-    <mat-card class="gcal-embed">
-      <iframe [src]="returnSafeLink()" style="border: 0" width="800"style="border: 0" width="1000" height="750"
-      frameborder="0" scrolling="auto"></iframe>
-
-    </mat-card>
-
-  </div>
-
-  <!-- set active to default-->
-  <!---search Card???-->
-  <div fxFlex flFlex.gt-sm="40"  fxFlexOffset.gt-sm="10">
-  <mat-card class="search-card">
+    <!-- set active to default-->
+    <!---search Card???-->
+    <mat-card class="search-card">
       <mat-card-header>
+        <!--Note filter-->
         <mat-card-title class="note-list-title">Notes</mat-card-title>
       </mat-card-header>
       <mat-card-content fxLayout="column">
@@ -51,13 +40,14 @@
           </mat-form-field>
         </div>
       </mat-card-content>
-  </mat-card>
-  </div>
-</div>
+    </mat-card>
 
-<div fxLayout="row">
-  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10" *ngIf="serverFilteredNotes" >
-      <mat-card class="'list'">
+    <!--New Note-->
+    <app-add-note [owner_id]="this.id" class="add-note">
+    </app-add-note>
+    <!--Notes-->
+    <div fxFlex>
+      <mat-card class="list">
         <mat-card-content>
           <mat-list class="note-nav-list">
             <h3 mat-subheader>Notes</h3>
@@ -69,12 +59,14 @@
           </mat-list>
         </mat-card-content>
       </mat-card>
+    </div>
   </div>
-</div>
-<div fxLayout="row">
-  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
-    <app-add-note [owner_id]="this.id" class="add-note" fxFlex="1 1 280px">
 
-    </app-add-note>
-</div>
+  <div fxFlex fxLayoutAlign="end center">
+    <!--google calendar and related-->
+    <mat-card class="gcal-embed">
+      <iframe [src]="returnSafeLink()" style="border: 0" width="800" style="border: 0" height="750" frameborder="0"
+        scrolling="auto"></iframe>
+    </mat-card>
+  </div>
 </div>
